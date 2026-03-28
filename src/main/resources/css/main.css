@@ -1,0 +1,10 @@
+.consola {
+    -fx-background-color: black;
+}
+
+.consola .text {
+    -fx-fill: #26ff00;
+    -fx-font-size: 15px;
+    -fx-font-family: "Consolas";
+    -fx-font-weight: bold;
+}
