@@ -82,7 +82,12 @@ public class HelloApplication extends Application {
                     || palabra.charAt(0)=='{'
                     || palabra.charAt(0)=='}'
                     || palabra.charAt(0)=='('
-                    || palabra.charAt(0)==')')){
+                    || palabra.charAt(0)==')'
+                    || palabra.charAt(0)==';'
+                    || palabra.charAt(0)=='+'
+                    || palabra.charAt(0)=='-'
+                    || palabra.charAt(0)=='*'
+                    || palabra.charAt(0)=='/')){
                 creadorSpans.add(Collections.singleton("default"),length);
             }else {
                 creadorSpans.add(Collections.singleton("error"),length);
@@ -127,6 +132,24 @@ class Tokenizador{
                         tokens[0]=palabra;
                         palabra="";
                     }
+                    break;
+
+                case '{':
+                case '}': 
+                case '(': 
+                case ')':
+                case ';':
+                case '+':
+                case '-': 
+                case '*':
+                case '/':
+                    if(!palabra.isEmpty()){
+                        addToken(palabra);
+                        palabra="";
+                    }
+                    palabra=caracter+"";
+                    addToken(palabra);
+                    palabra="";
                     break;
                 default:
                     palabra=palabra+caracter;
