@@ -1,7 +1,20 @@
+.palabraReservada {
+    -fx-fill: blue; /* Resalta palabras clave en rojo */
+    -fx-font-weight: bold;
+}
+.error{
+    -fx-fill: red;
+    -fx-font-weight: bold;
+    -fx-underline: true;
+}
+
+.default {
+    -fx-fill: black; /* Normal para el resto del texto */
+}
+
 .consola {
     -fx-background-color: black;
 }
-
 .consola .text {
     -fx-fill: #26ff00;
     -fx-font-size: 15px;
