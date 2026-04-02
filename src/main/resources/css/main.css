@@ -12,6 +12,16 @@
     -fx-fill: black; /* Normal para el resto del texto */
 }
 
+.cadena{
+    -fx-fill: #26ff00;
+    -fx-font-weight: bold;
+}
+
+.identificador{
+    -fx-fill: #f940ff;
+    -fx-font-weight: bold;
+}
+
 .consola {
     -fx-background-color: black;
 }

@@ -1,14 +1,14 @@
 package org.example.lyaii.Automatas;
 
-import java.util.Scanner;
+//import java.util.Scanner;
 
 public class AutomataPalabrasReservadas {
     private static boolean flag;
-    public static void main(String [] args){
+    /*public static void main(String [] args){
         Scanner entrada=new Scanner(System.in);
         String cadena=entrada.nextLine();
         System.out.println(analizar(cadena));
-    }
+    }*/
     public static boolean analizar(String cadena){
         flag=false;
         try{q0(cadena);}catch(Exception e){}

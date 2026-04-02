@@ -3,12 +3,18 @@ package org.example.lyaii;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.kordamp.bootstrapfx.scene.layout.Panel;
+import org.example.lyaii.Automatas.AutomataCadena;
+import org.example.lyaii.Automatas.AutomataID;
+import org.example.lyaii.Automatas.AutomataNumero;
 import org.example.lyaii.Automatas.AutomataPalabrasReservadas;
 import org.fxmisc.richtext.CodeArea;
 
@@ -44,14 +50,24 @@ public class HelloApplication extends Application {
         VBox vConsolas=new VBox(cda_consola, espacio);
         vConsolas.setMargin(cda_consola, new Insets(20, 20, 0, 50));
 
+        MenuItem mit_abrir=new MenuItem("Abrir");
+        mit_abrir.setOnAction(event -> {});//está vacío
+
+        Menu men_archivo=new Menu("Archivo");
+        men_archivo.getItems().addAll(mit_abrir);
+
+        MenuBar mbr_principal=new MenuBar();
+        mbr_principal.getMenus().addAll(men_archivo);
+
         BorderPane bdpPrincipal=new BorderPane();
         bdpPrincipal.setCenter(vConsolas);
 
-        Panel pnlPrincipal=new Panel();
-        pnlPrincipal.getStyleClass().add("panel-primary");
-        pnlPrincipal.setBody(bdpPrincipal);
+        Panel pnl_Principal=new Panel();
+        pnl_Principal.getStyleClass().add("panel-primary");
+        pnl_Principal.setBody(bdpPrincipal);
+        pnl_Principal.setHeading(mbr_principal);
 
-        scene = new Scene(pnlPrincipal,600,600);
+        scene = new Scene(pnl_Principal,600,600);
         //iniciar
     }
 
@@ -75,7 +91,13 @@ public class HelloApplication extends Application {
             int length = palabra.length();//Para aplicar los estilos en rangos correspondientes
             if(AutomataPalabrasReservadas.analizar(palabra)){
                 creadorSpans.add(Collections.singleton("palabraReservada"),length);
-            } else if(!palabra.isEmpty() 
+            } else if(AutomataCadena.analizar(palabra)){
+                creadorSpans.add(Collections.singleton("cadena"),length);
+            } else if(AutomataNumero.analizar(palabra)){
+                creadorSpans.add(Collections.singleton("default"),length);
+            } else if(AutomataID.analizar(palabra)){
+                creadorSpans.add(Collections.singleton("identificador"),length);
+            }else if(!palabra.isEmpty() 
                 && (palabra.charAt(0)==' ' 
                     || palabra.charAt(0)=='\n' 
                     || palabra.charAt(0)=='\t'
@@ -87,7 +109,8 @@ public class HelloApplication extends Application {
                     || palabra.charAt(0)=='+'
                     || palabra.charAt(0)=='-'
                     || palabra.charAt(0)=='*'
-                    || palabra.charAt(0)=='/')){
+                    || palabra.charAt(0)=='/'
+                    || palabra.charAt(0)=='=')){
                 creadorSpans.add(Collections.singleton("default"),length);
             }else {
                 creadorSpans.add(Collections.singleton("error"),length);
@@ -143,6 +166,7 @@ class Tokenizador{
                 case '-': 
                 case '*':
                 case '/':
+                case '=':
                     if(!palabra.isEmpty()){
                         addToken(palabra);
                         palabra="";
