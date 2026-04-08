@@ -35,6 +35,8 @@ public class AutomataPalabrasReservadas {
             q31(cad,1);
         }else if(cad.charAt(0)=='t'){
             q40(cad,1);
+        } else if(cad.charAt(0)=='p'){
+            q59(cad,1);
         }
     }
     private static void q1(String cad, int pos){
@@ -331,6 +333,31 @@ public class AutomataPalabrasReservadas {
         }
     }
     private static void q58(String cad, int pos){
+        if(cad.length() == pos){
+            flag=true;
+        }
+    }//final
+    private static void q59(String cad, int pos){
+        if(cad.charAt(pos)=='r'){
+            q60(cad,pos+1);
+        }
+    }
+    private static void q60(String cad, int pos){
+        if(cad.charAt(pos)=='i'){
+            q61(cad,pos+1);
+        }
+    }
+    private static void q61(String cad, int pos){
+        if(cad.charAt(pos)=='n'){
+            q62(cad,pos+1);
+        }
+    }
+    private static void q62(String cad, int pos){
+        if(cad.charAt(pos)=='t'){
+            q63(cad,pos+1);
+        }
+    }
+    private static void q63(String cad, int pos){
         if(cad.length() == pos){
             flag=true;
         }
