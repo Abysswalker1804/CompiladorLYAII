@@ -90,7 +90,17 @@ public class HelloApplication extends Application {
         for (String palabra : codigoArreglo) {
             int length = palabra.length();//Para aplicar los estilos en rangos correspondientes
             if(AutomataPalabrasReservadas.analizar(palabra)){
-                creadorSpans.add(Collections.singleton("palabraReservada"),length);
+                switch (AutomataPalabrasReservadas.getPalabra()){
+                    case PR04:
+                    case PR05:
+                    case PR06:
+                    case PR07:
+                    case PR08:
+                        creadorSpans.add(Collections.singleton("tiposDatos"),length);
+                        break;
+                    default:
+                        creadorSpans.add(Collections.singleton("palabraReservada"),length);
+                }
             } else if(AutomataCadena.analizar(palabra)){
                 creadorSpans.add(Collections.singleton("cadena"),length);
             } else if(AutomataNumero.analizar(palabra)){

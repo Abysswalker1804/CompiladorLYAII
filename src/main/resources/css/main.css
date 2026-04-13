@@ -1,5 +1,9 @@
 .palabraReservada {
-    -fx-fill: blue; /* Resalta palabras clave en rojo */
+    -fx-fill: blue; /* Resalta palabras clave en azul */
+    -fx-font-weight: bold;
+}
+.tiposDatos{
+    -fx-fill: #C79B56; /* Resalta palabras clave en azul */
     -fx-font-weight: bold;
 }
 .error{

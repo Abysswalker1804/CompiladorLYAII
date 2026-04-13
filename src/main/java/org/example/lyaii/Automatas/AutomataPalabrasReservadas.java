@@ -2,8 +2,11 @@ package org.example.lyaii.Automatas;
 
 //import java.util.Scanner;
 
+import org.example.lyaii.Enums.Palabras;
+
 public class AutomataPalabrasReservadas {
     private static boolean flag;
+    private static Palabras palabra;
     /*public static void main(String [] args){
         Scanner entrada=new Scanner(System.in);
         String cadena=entrada.nextLine();
@@ -11,8 +14,12 @@ public class AutomataPalabrasReservadas {
     }*/
     public static boolean analizar(String cadena){
         flag=false;
-        try{q0(cadena);}catch(Exception e){}
+        palabra=Palabras.NOTAWORD;
+        try{q0(cadena);}catch(Exception e){flag=false; palabra=Palabras.NOTAWORD;}
         return flag;
+    }
+    public static Palabras getPalabra(){
+        return palabra;
     }
     private static void q0(String cad){
         if(cad.charAt(0)=='q'){
@@ -62,6 +69,7 @@ public class AutomataPalabrasReservadas {
     private static void q5(String cad, int pos){
         if(pos == cad.length()){
             flag=true;
+            palabra=Palabras.PR01;
         }
     }//final
     private static void q6(String cad, int pos){
@@ -79,6 +87,7 @@ public class AutomataPalabrasReservadas {
     private static void q8(String cad, int pos){
         if(cad.length() == pos){
             flag=true;
+            palabra=Palabras.PR02;
         }
     }//final
     private static void q9(String cad, int pos){
@@ -114,6 +123,7 @@ public class AutomataPalabrasReservadas {
     private static void q15(String cad, int pos){
         if(cad.length() == pos){
             flag=true;
+            palabra=Palabras.PR03;
         }
     }//final
     private static void q16(String cad, int pos){
@@ -138,6 +148,7 @@ public class AutomataPalabrasReservadas {
     private static void q19(String cad, int pos){
         if(cad.length() == pos){
             flag=true;
+            palabra=Palabras.PR06;
         }
     }//final
     private static void q20(String cad, int pos){
@@ -165,6 +176,7 @@ public class AutomataPalabrasReservadas {
     private static void q24(String cad, int pos){
         if(cad.length() == pos){
             flag=true;
+            palabra=Palabras.PR07;
         }
     }//final
     private static void q25(String cad, int pos){
@@ -195,6 +207,7 @@ public class AutomataPalabrasReservadas {
     private static void q30(String cad, int pos){
         if(cad.length() == pos){
             flag=true;
+            palabra=Palabras.PR08;
         }
     }//final
     private static void q31(String cad, int pos){
@@ -215,11 +228,13 @@ public class AutomataPalabrasReservadas {
     private static void q34(String cad, int pos){
         if(cad.length() == pos){
             flag=true;
+            palabra=Palabras.PR09;
         }
     }//final
     private static void q35(String cad, int pos){
         if(cad.length() == pos){
             flag=true;
+            palabra=Palabras.PR10;
         }
     }//final
     private static void q36(String cad, int pos){
@@ -240,6 +255,7 @@ public class AutomataPalabrasReservadas {
     private static void q39(String cad, int pos){
         if(cad.length() == pos){
             flag=true;
+            palabra=Palabras.PR11;
         }
     }//final
     private static void q40(String cad, int pos){
@@ -260,6 +276,7 @@ public class AutomataPalabrasReservadas {
     private static void q43(String cad, int pos){
         if(cad.length() == pos){
             flag=true;
+            palabra=Palabras.PR12;
         }
     }//final
     private static void q44(String cad, int pos){
@@ -280,6 +297,7 @@ public class AutomataPalabrasReservadas {
     private static void q47(String cad, int pos){
         if(cad.length() == pos){
             flag=true;
+            palabra=Palabras.PR13;
         }
     }//final
     private static void q48(String cad, int pos){
@@ -300,6 +318,7 @@ public class AutomataPalabrasReservadas {
     private static void q51(String cad, int pos){
         if(cad.length() == pos){
             flag=true;
+            palabra=Palabras.PR14;
         }
     }// final
     private static void q52(String cad, int pos){
@@ -310,6 +329,7 @@ public class AutomataPalabrasReservadas {
     private static void q53(String cad, int pos){
         if(cad.length() == pos){
             flag=true;
+            palabra=Palabras.PR04;
         }
     }//final
     private static void q54(String cad, int pos){
@@ -335,6 +355,7 @@ public class AutomataPalabrasReservadas {
     private static void q58(String cad, int pos){
         if(cad.length() == pos){
             flag=true;
+            palabra=Palabras.PR05;
         }
     }//final
     private static void q59(String cad, int pos){
@@ -360,6 +381,7 @@ public class AutomataPalabrasReservadas {
     private static void q63(String cad, int pos){
         if(cad.length() == pos){
             flag=true;
+            palabra=Palabras.PR15;
         }
     }//final
 }
