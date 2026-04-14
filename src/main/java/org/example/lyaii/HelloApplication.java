@@ -26,6 +26,7 @@ public class HelloApplication extends Application {
     private Scene scene;
     private CodeArea cda_consola;
     private boolean error_lexico=false;
+    private boolean comentario=false;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -89,6 +90,7 @@ public class HelloApplication extends Application {
         error_lexico=false;
         for (String palabra : codigoArreglo) {
             int length = palabra.length();//Para aplicar los estilos en rangos correspondientes
+            System.out.println("palabra: "+palabra+", len: "+length);
             if(AutomataPalabrasReservadas.analizar(palabra)){
                 switch (AutomataPalabrasReservadas.getPalabra()){
                     case PR04:
@@ -122,7 +124,9 @@ public class HelloApplication extends Application {
                     || palabra.charAt(0)=='/'
                     || palabra.charAt(0)=='=')){
                 creadorSpans.add(Collections.singleton("default"),length);
-            }else {
+            }else if(palabra.charAt(0)=='%'){
+                creadorSpans.add(Collections.singleton("comentario"),length);
+            }else{
                 creadorSpans.add(Collections.singleton("error"),length);
                 error_lexico=true;
             }
@@ -150,20 +154,28 @@ class Tokenizador{
     public static String[] tokenizar(String texto){
         tokens=new String[1];
         char caracter;
-        String espacio="", palabra="";
+        String espacio="", palabra="",comentario="";
+        boolean flag_comentario=false;
         for(int i=0; i<texto.length();i++){
             caracter=texto.charAt(i);
             switch (caracter) {
                 case ' ':
                 case '\n':
                 case '\t':
-                    espacio = espacio + caracter;
-                    if(!palabra.isEmpty()){
-                        addToken(palabra);
-                        palabra="";
-                    }else if (tokens[0]==null){
-                        tokens[0]=palabra;
-                        palabra="";
+                    if(flag_comentario){
+                        comentario=comentario+caracter;
+                        if(i==texto.length()-1){
+                            addToken(comentario);
+                        }
+                    }else{ 
+                        espacio = espacio + caracter;
+                        if(!palabra.isEmpty()){
+                            addToken(palabra);
+                            palabra="";
+                        }else if (tokens[0]==null){
+                            tokens[0]=palabra;
+                            palabra="";
+                        }
                     }
                     break;
 
@@ -177,7 +189,12 @@ class Tokenizador{
                 case '*':
                 case '/':
                 case '=':
-                    if(!palabra.isEmpty()){
+                    if(flag_comentario){
+                        comentario=comentario+caracter;
+                        if(i==texto.length()-1){
+                            addToken(comentario);
+                        }
+                    }else if(!palabra.isEmpty()){
                         addToken(palabra);
                         palabra="";
                     }
@@ -185,14 +202,40 @@ class Tokenizador{
                     addToken(palabra);
                     palabra="";
                     break;
-                default:
-                    palabra=palabra+caracter;
+                case '%':
+                    if(!palabra.isEmpty()){
+                        addToken(palabra);
+                        palabra="";
+                    }
                     if(!espacio.isEmpty()){
                         addToken(espacio);
                         espacio="";
-                    }else if (tokens[0]==null){
-                        tokens[0]=espacio;
-                        espacio="";
+                    }
+                    if(flag_comentario){
+                        flag_comentario=false;
+                        comentario=comentario+caracter;
+                        addToken(comentario);
+                        comentario="";
+                    }else{
+                        flag_comentario=true;
+                        comentario=comentario+caracter;
+                    }
+                    break;
+                default:
+                    if(flag_comentario){
+                        comentario=comentario+caracter;
+                        if(i==texto.length()-1){
+                            addToken(comentario);
+                        }
+                    }else {
+                        palabra=palabra+caracter;
+                        if(!espacio.isEmpty()){
+                            addToken(espacio);
+                            espacio="";
+                        }else if (tokens[0]==null){
+                            tokens[0]=espacio;
+                            espacio="";
+                        }
                     }
             }
             if(i==texto.length()-1){

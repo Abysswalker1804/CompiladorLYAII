@@ -11,7 +11,10 @@
     -fx-font-weight: bold;
     -fx-underline: true;
 }
-
+.comentario{
+    -fx-fill: rgb(99, 94, 94);
+    -fx-font-weight: bold;
+}
 .default {
     -fx-fill: black; /* Normal para el resto del texto */
 }
