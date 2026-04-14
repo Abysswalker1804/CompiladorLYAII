@@ -90,7 +90,7 @@ public class HelloApplication extends Application {
         error_lexico=false;
         for (String palabra : codigoArreglo) {
             int length = palabra.length();//Para aplicar los estilos en rangos correspondientes
-            System.out.println("palabra: "+palabra+", len: "+length);
+            //System.out.println("palabra: "+palabra+", len: "+length);
             if(AutomataPalabrasReservadas.analizar(palabra)){
                 switch (AutomataPalabrasReservadas.getPalabra()){
                     case PR04:
