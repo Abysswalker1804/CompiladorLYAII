@@ -6,6 +6,10 @@
     -fx-fill: #C79B56; /* Resalta palabras clave en azul */
     -fx-font-weight: bold;
 }
+.booleans{
+    -fx-fill: #3f9c8d; /* Resalta palabras clave en azul */
+    -fx-font-weight: bold;
+}
 .error{
     -fx-fill: red;
     -fx-font-weight: bold;

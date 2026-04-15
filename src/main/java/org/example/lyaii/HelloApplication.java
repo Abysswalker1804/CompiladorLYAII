@@ -16,6 +16,7 @@ import org.example.lyaii.Automatas.AutomataCadena;
 import org.example.lyaii.Automatas.AutomataID;
 import org.example.lyaii.Automatas.AutomataNumero;
 import org.example.lyaii.Automatas.AutomataPalabrasReservadas;
+import org.example.lyaii.Automatas.AutomataSintax;
 import org.fxmisc.richtext.CodeArea;
 
 import java.io.IOException;
@@ -26,7 +27,8 @@ public class HelloApplication extends Application {
     private Scene scene;
     private CodeArea cda_consola;
     private boolean error_lexico=false;
-    private boolean comentario=false;
+    private String [] codigoArreglo;
+    private MenuItem mit_compilar;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -53,9 +55,18 @@ public class HelloApplication extends Application {
 
         MenuItem mit_abrir=new MenuItem("Abrir");
         mit_abrir.setOnAction(event -> {});//está vacío
+        mit_compilar=new MenuItem("Compilar");
+        mit_compilar.setOnAction(event -> {
+            String[] codigo_limpio=limpiar(codigoArreglo);
+            if(AutomataSintax.analizar(codigo_limpio)){
+                System.out.println("Sintaxis correcta");
+            }else{
+                System.out.println("Error cerca de "+AutomataSintax.getError());
+            }
+        });
 
         Menu men_archivo=new Menu("Archivo");
-        men_archivo.getItems().addAll(mit_abrir);
+        men_archivo.getItems().addAll(mit_abrir,mit_compilar);
 
         MenuBar mbr_principal=new MenuBar();
         mbr_principal.getMenus().addAll(men_archivo);
@@ -84,9 +95,9 @@ public class HelloApplication extends Application {
 
     private StyleSpans<Collection<String>> identificarPalabras(String codigo){
         StyleSpansBuilder<Collection<String>> creadorSpans = new StyleSpansBuilder<>();
-        String [] codigoArreglo=Tokenizador.tokenizar(codigo);
-
-        int longitud_acumulada=0;
+        codigoArreglo=Tokenizador.tokenizar(codigo);
+        
+        //Analisis Lexico
         error_lexico=false;
         for (String palabra : codigoArreglo) {
             int length = palabra.length();//Para aplicar los estilos en rangos correspondientes
@@ -99,6 +110,10 @@ public class HelloApplication extends Application {
                     case PR07:
                     case PR08:
                         creadorSpans.add(Collections.singleton("tiposDatos"),length);
+                        break;
+                    case PR12:
+                    case PR13:
+                        creadorSpans.add(Collections.singleton("booleans"),length);
                         break;
                     default:
                         creadorSpans.add(Collections.singleton("palabraReservada"),length);
@@ -122,13 +137,21 @@ public class HelloApplication extends Application {
                     || palabra.charAt(0)=='-'
                     || palabra.charAt(0)=='*'
                     || palabra.charAt(0)=='/'
-                    || palabra.charAt(0)=='=')){
+                    || palabra.charAt(0)=='='
+                    || palabra.equals("||")
+                    || palabra.equals("&&"))){
                 creadorSpans.add(Collections.singleton("default"),length);
             }else if(palabra.charAt(0)=='%'){
                 creadorSpans.add(Collections.singleton("comentario"),length);
             }else{
                 creadorSpans.add(Collections.singleton("error"),length);
                 error_lexico=true;
+            }
+
+            if(error_lexico){
+                mit_compilar.setDisable(true);
+            }else{
+                mit_compilar.setDisable(false);
             }
         }
         
@@ -139,6 +162,15 @@ public class HelloApplication extends Application {
 
     public static void main(String[] args) {
         launch();
+    }
+    private String [] limpiar(String [] entrada){
+        String[] tokens=entrada;
+        for(int i=0; i < tokens.length; i++){
+            if(tokens[i].charAt(0)=='\n' || tokens[i].charAt(0)=='\t' ||tokens[i].equals(" ")){
+                tokens[i]=" ";
+            }
+        }
+        return tokens;
     }
 }
 
@@ -155,7 +187,7 @@ class Tokenizador{
         tokens=new String[1];
         char caracter;
         String espacio="", palabra="",comentario="";
-        boolean flag_comentario=false;
+        boolean opLog, flag_comentario=false;
         for(int i=0; i<texto.length();i++){
             caracter=texto.charAt(i);
             switch (caracter) {
@@ -221,6 +253,28 @@ class Tokenizador{
                         comentario=comentario+caracter;
                     }
                     break;
+                case '|':
+                case '&':
+                    if(flag_comentario){
+                        comentario=comentario+caracter;
+                        if(i==texto.length()-1){
+                            addToken(comentario);
+                        }
+                    }else {
+                        if(!palabra.isEmpty() && palabra.charAt(0)!='|' && palabra.charAt(0)!='&' ){
+                            addToken(palabra);
+                            palabra="";
+                        }
+                        palabra=palabra+caracter;
+                        if(!espacio.isEmpty()){
+                            addToken(espacio);
+                            espacio="";
+                        }else if (tokens[0]==null){
+                            tokens[0]=espacio;
+                            espacio="";
+                        }
+                    }
+                    break;
                 default:
                     if(flag_comentario){
                         comentario=comentario+caracter;
@@ -228,6 +282,10 @@ class Tokenizador{
                             addToken(comentario);
                         }
                     }else {
+                        if(palabra.contains("|") || palabra.contains("&")){
+                            addToken(palabra);
+                            palabra="";
+                        }
                         palabra=palabra+caracter;
                         if(!espacio.isEmpty()){
                             addToken(espacio);
