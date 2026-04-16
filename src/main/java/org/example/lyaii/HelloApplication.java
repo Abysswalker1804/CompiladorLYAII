@@ -60,13 +60,15 @@ public class HelloApplication extends Application {
         VBox espacio=new VBox();
         espacio.setMinHeight(10);
 
-        ToggleButton tgl_luz=new ToggleButton("Iluminación");
+        ToggleButton tgl_luz=new ToggleButton("Modo Oscuro");
         tgl_luz.selectedProperty().addListener((ods,oldVal,newVal) -> {
             if(newVal){
+                tgl_luz.setText("Modo Luz");
                 scene.getRoot().setStyle("-fx-background-color: rgb(65, 65, 65);");
                 cda_consola.getStyleClass().remove("AreaEditable");
                 cda_consola.getStyleClass().add("AreaEditableNoche");
             }else{
+                tgl_luz.setText("Modo Oscuro");
                 scene.getRoot().setStyle("-fx-background-color: #f4f4f4;");
                 cda_consola.getStyleClass().remove("AreaEditableNoche");
                 cda_consola.getStyleClass().add("AreaEditable");
