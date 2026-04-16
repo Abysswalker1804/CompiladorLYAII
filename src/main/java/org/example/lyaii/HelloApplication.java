@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -17,6 +18,9 @@ import org.example.lyaii.Automatas.AutomataID;
 import org.example.lyaii.Automatas.AutomataNumero;
 import org.example.lyaii.Automatas.AutomataPalabrasReservadas;
 import org.example.lyaii.Automatas.AutomataSintax;
+import org.example.lyaii.Enums.Tipos;
+import org.example.lyaii.TablaSimbolos.Simbolo;
+import org.example.lyaii.TablaSimbolos.TablaSimbolos;
 import org.fxmisc.richtext.CodeArea;
 
 import java.io.IOException;
@@ -26,9 +30,12 @@ import java.util.Collections;
 public class HelloApplication extends Application {
     private Scene scene;
     private CodeArea cda_consola;
+    private CodeArea cda_error;
     private boolean error_lexico=false;
     private String [] codigoArreglo;
     private MenuItem mit_compilar;
+    private TablaSimbolos tabla=new TablaSimbolos();
+    private String error_tabla="";
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -44,14 +51,31 @@ public class HelloApplication extends Application {
     private void crearUI(){
         cda_consola=new CodeArea();
         cda_consola.setPrefSize(450, 600);
+        cda_error=new CodeArea();
+        cda_error.setPrefSize(450,300);
+        cda_error.setEditable(false);
         IniciarEditor();
         //CodeArea consola_info=new CodeArea();
         //consola_info.getStyleClass().add("consola");
         VBox espacio=new VBox();
         espacio.setMinHeight(10);
 
-        VBox vConsolas=new VBox(cda_consola, espacio);
-        vConsolas.setMargin(cda_consola, new Insets(20, 20, 0, 50));
+        ToggleButton tgl_luz=new ToggleButton("Iluminación");
+        tgl_luz.selectedProperty().addListener((ods,oldVal,newVal) -> {
+            if(newVal){
+                scene.getRoot().setStyle("-fx-background-color: rgb(65, 65, 65);");
+                cda_consola.getStyleClass().remove("AreaEditable");
+                cda_consola.getStyleClass().add("AreaEditableNoche");
+            }else{
+                scene.getRoot().setStyle("-fx-background-color: #f4f4f4;");
+                cda_consola.getStyleClass().remove("AreaEditableNoche");
+                cda_consola.getStyleClass().add("AreaEditable");
+            }
+        });
+
+        VBox vConsolas=new VBox(tgl_luz,cda_consola, espacio, cda_error);
+        VBox.setMargin(cda_consola, new Insets(20, 20, 0, 50));
+        VBox.setMargin(cda_error, new Insets(20, 20, 20, 50));
 
         MenuItem mit_abrir=new MenuItem("Abrir");
         mit_abrir.setOnAction(event -> {});//está vacío
@@ -59,9 +83,10 @@ public class HelloApplication extends Application {
         mit_compilar.setOnAction(event -> {
             String[] codigo_limpio=limpiar(codigoArreglo);
             if(AutomataSintax.analizar(codigo_limpio)){
-                System.out.println("Sintaxis correcta");
+                cda_error.replaceText(" <CORE> Sintaxis correcta!");
+                //Comeinza análsis semántico
             }else{
-                System.out.println("Error cerca de "+AutomataSintax.getError());
+                cda_error.replaceText(" <CORE> Error cerca de "+AutomataSintax.getError());
             }
         });
 
@@ -84,7 +109,8 @@ public class HelloApplication extends Application {
     }
 
     private void IniciarEditor() {
-        cda_consola.setStyle("-fx-font-size: 14px; -fx-font-family: Consolas;");
+        cda_error.getStyleClass().add("AreaError");
+        cda_consola.getStyleClass().add("AreaEditable");
         cda_consola.textProperty().addListener((obs, texto, nuevoTexto) -> {
             if (!nuevoTexto.isEmpty() && !nuevoTexto.isBlank()) {
                 cda_consola.setStyleSpans(0, identificarPalabras(nuevoTexto));
@@ -122,7 +148,7 @@ public class HelloApplication extends Application {
                 creadorSpans.add(Collections.singleton("cadena"),length);
             } else if(AutomataNumero.analizar(palabra)){
                 creadorSpans.add(Collections.singleton("default"),length);
-            } else if(AutomataID.analizar(palabra)){
+            } else if(AutomataID.analizar(palabra)){         
                 creadorSpans.add(Collections.singleton("identificador"),length);
             }else if(!palabra.isEmpty() 
                 && (palabra.charAt(0)==' ' 
@@ -148,14 +174,15 @@ public class HelloApplication extends Application {
                 error_lexico=true;
             }
 
-            if(error_lexico){
-                mit_compilar.setDisable(true);
-            }else{
-                mit_compilar.setDisable(false);
-            }
         }
         
         //Incompleto
+
+        if(error_lexico){
+            mit_compilar.setDisable(true);
+        }else{
+            mit_compilar.setDisable(false);
+        }
 
         return creadorSpans.create();
     }
