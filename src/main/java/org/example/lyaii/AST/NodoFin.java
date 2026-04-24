@@ -1,15 +1,15 @@
 package org.example.lyaii.AST;
 
+import org.example.lyaii.Enums.Palabras;
+
 public class NodoFin  extends Nodo{
-    private String dato;
-    public NodoFin(String dato){
-        this.dato=dato;
+    private Palabras palabra;
+    public NodoFin(){}
+    public void setWord(Palabras palabra){
+        this.palabra=palabra;
     }
     @Override
     public boolean check() {
-        if(dato.equals("end"))
-            return true;
-        else
-            return false;
+        return true;
     }
 }

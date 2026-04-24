@@ -7,5 +7,7 @@ public enum Tipos {
     UFIXED,
     FIXED,
     BOOLEAN,
-    NULL
+    NULL,
+    ERROR,
+    UNDEFINED
 }

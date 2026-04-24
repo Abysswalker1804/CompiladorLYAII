@@ -34,8 +34,8 @@ public class HelloApplication extends Application {
     private boolean error_lexico=false;
     private String [] codigoArreglo;
     private MenuItem mit_compilar;
-    private TablaSimbolos tabla=new TablaSimbolos();
     private String error_tabla="";
+    private static boolean error_semantico=false;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -82,8 +82,9 @@ public class HelloApplication extends Application {
         MenuItem mit_abrir=new MenuItem("Abrir");
         mit_abrir.setOnAction(event -> {});//está vacío
         mit_compilar=new MenuItem("Compilar");
+        mit_compilar.setDisable(true);
         mit_compilar.setOnAction(event -> {
-            String[] codigo_limpio=limpiar(codigoArreglo);
+            String[] codigo_limpio=Tokenizador.limpiar(limpiar(codigoArreglo));
             if(AutomataSintax.analizar(codigo_limpio)){
                 cda_error.replaceText(" <CORE> Sintaxis correcta!");
                 //Comeinza análsis semántico
@@ -201,16 +202,20 @@ public class HelloApplication extends Application {
         }
         return tokens;
     }
+    public static void setErrorSemantico(boolean flag){
+        error_semantico=flag;
+        //Hay que hacer pila de errores
+    }
 }
+
 
 class Tokenizador{
     private static String [] tokens;
-    /*prueba
+    /*
     public static void main(String args[]){
-        tokenizar(".start\n dclr @var .end");
-        for(String token : tokens){
-            System.out.println("\""+token+"\"");
-        }
+        String [] arr={" ", "begin", " ", " ", " ","=", "end"};
+        arr=limpiar(arr);
+        String[] arr1=arr;
     }*/
     public static String[] tokenizar(String texto){
         tokens=new String[1];
@@ -352,5 +357,17 @@ class Tokenizador{
         tokens=new String[aux.length+1];
         for(int i=0; i< aux.length; i++){if(aux[i]!=null){tokens[i]=aux[i];}}
         tokens[aux.length]=token;
+    }
+    public static String [] limpiar(String [] tokens){
+        int cant=0;
+        for(String token: tokens){if(!token.isBlank()){cant++;}}
+        String [] nuevo=new String[cant];
+        for(int j=0, i=0; i<tokens.length; i++) {
+            if (!tokens[i].isBlank()){
+                nuevo[j] = tokens[i];
+                j++;
+            }
+        }
+        return nuevo;
     }
 }

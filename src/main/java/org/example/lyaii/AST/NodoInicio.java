@@ -1,15 +1,18 @@
 package org.example.lyaii.AST;
 
+import org.example.lyaii.Enums.Palabras;
+
 public class NodoInicio extends Nodo{
-    private String dato;
-    public NodoInicio(String dato){
-        this.dato=dato;
+    private Palabras palabra;
+    public NodoInicio(Palabras palabra){
+        this.palabra=palabra;
+    }
+    public NodoInicio(){}
+    public void setWord(Palabras palabra){
+        this.palabra=palabra;
     }
     @Override
     public boolean check() {
-        if(dato.equals("begin"))
-            return true;
-        else
-            return false;
+        return true;
     }
 }

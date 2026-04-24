@@ -6,37 +6,24 @@ import java.util.Map;
 import org.example.lyaii.Enums.Tipos;
 
 public class TablaSimbolos {
-    private Map<String, Simbolo> tabla;
-    
-    public TablaSimbolos(){
-        tabla = new HashMap<>();
-    }
-    public TablaSimbolos(String nombre, Tipos tipo, String valor){
-        tabla = new HashMap<>();
-        tabla.put(nombre, new Simbolo(nombre, tipo, valor));
-    }
-    public Simbolo consultar(String nombre){
-        if(tabla.containsKey(nombre))
-            return tabla.get(nombre);
-        else
-            return null;
+    private static Map<String, Simbolo> tabla = new HashMap<>();
+    public static Simbolo consultar(String nombre){
+        return tabla.get(nombre);
     }
     //Este método lanza excepciones
-    public void insertar(String nombre, Tipos tipo, String valor){
-        if(tabla.containsKey(nombre)){
+    public static void insertar(String nombre, Tipos tipo, String valor){
+        if(tabla.containsKey(nombre))
             throw new IllegalArgumentException("Identificador ya existente");
-        }else{
+        else
             tabla.put(nombre, new Simbolo(nombre,tipo,valor));
-        }
     }
-    public void actualizar(String nombre, Tipos tipo, String valor){
-        if(tabla.containsKey(nombre)){
+    public static void actualizar(String nombre, Tipos tipo, String valor){
+        if(tabla.containsKey(nombre))
             tabla.put(nombre, new Simbolo(nombre,tipo,valor));
-        }else{
+        else
             throw new IllegalArgumentException("Identificador no existente");
-        }
     }
-    public void printTabla(){
+    public static void printTabla(){
         tabla.forEach((nombre,simbolo) ->{
             String str;
             double num;
