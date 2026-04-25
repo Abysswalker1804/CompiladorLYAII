@@ -4,20 +4,22 @@ import org.example.lyaii.Enums.Palabras;
 import org.example.lyaii.Enums.Tipos;
 import org.example.lyaii.TablaSimbolos.Simbolo;
 
-public class NodoDeclaracion extends Nodo{
-    private Palabras instruccion;
+public class NodoAsignacion extends Nodo{
     private Tipos valor;
     private Simbolo sym;
-    public NodoDeclaracion(Palabras instruccion, Tipos valor, Simbolo sym){
-        this.instruccion=instruccion;
+    public NodoAsignacion(Tipos valor, Simbolo sym){
         this.valor=valor;
         this.sym=sym;
     }
     @Override
     public boolean check() {
-        if(instruccion==Palabras.PR03 && valor==sym.getTipo())
-            return true;
-        else
+        if(sym==null)
             return false;
-    }//hay que hacer pila de errores
+        else{
+            if(valor==sym.getTipo())
+                return true;
+            else
+                return false;
+        }
+    }
 }

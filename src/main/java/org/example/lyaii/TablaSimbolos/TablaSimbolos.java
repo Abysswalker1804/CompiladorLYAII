@@ -24,9 +24,23 @@ public class TablaSimbolos {
             tabla.put(nombre, new Simbolo(nombre,tipo));
     }
     public static void actualizar(String nombre, Tipos tipo, String valor){
-        if(tabla.containsKey(nombre))
-            tabla.put(nombre, new Simbolo(nombre,tipo,valor));
-        else
+        if(tabla.containsKey(nombre)) {
+            Tipos oldType=tabla.get(nombre).getTipo();
+            if(oldType==tipo)
+                tabla.put(nombre, new Simbolo(nombre, tipo, valor));
+            else
+                throw new IllegalArgumentException("Incompatibilidad de tipos en asignación");
+        }else
+            throw new IllegalArgumentException("Identificador no existente");
+    }
+    public static void actualizar(String nombre, Tipos tipo){
+        if(tabla.containsKey(nombre)) {
+            Tipos oldType=tabla.get(nombre).getTipo();
+            if(oldType==tipo)
+                tabla.put(nombre, new Simbolo(nombre, tipo));
+            else
+                throw new IllegalArgumentException("Incompatibilidad de tipos en asignación");
+        }else
             throw new IllegalArgumentException("Identificador no existente");
     }
     public static void printTabla(){

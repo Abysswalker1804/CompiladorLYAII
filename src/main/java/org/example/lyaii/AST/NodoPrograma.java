@@ -6,6 +6,7 @@ import org.example.lyaii.Enums.Palabras;
 import org.example.lyaii.Enums.Tipos;
 import org.example.lyaii.TablaSimbolos.Simbolo;
 import org.example.lyaii.TablaSimbolos.TablaSimbolos;
+import org.example.lyaii.Tools.PilaErrores;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,14 +34,34 @@ public class NodoPrograma extends Nodo{
             case PR03 -> declaracion(palabra, tokens);
         }
     }
+    protected void addAsignacion(String [] tokens){
+        //Estructura: $id, =, ..., ;
+        String[]sub= Arrays.copyOfRange(tokens,2, tokens.length);
+        Tipos valor=resolver(sub);
+        try{
+            TablaSimbolos.actualizar(tokens[0],valor);
+            instrucciones.addAsignacion(valor,TablaSimbolos.consultar(tokens[0]));
+        }catch (IllegalArgumentException iae){
+            System.out.println(iae.getMessage());
+            PilaErrores.push(iae.getMessage());
+            instrucciones.addAsignacion(Tipos.ERROR,TablaSimbolos.consultar(tokens[0]));
+        }
+    }
     private void declaracion(Palabras palabra, String[] tokens){
         //Estructura de tokens: declare, tipo, id, =, ..., ;
         //Primero hay que resolver el valor de lo que se está asignando
         String[]sub= Arrays.copyOfRange(tokens,4, tokens.length);
         Tipos valor=resolver(sub);
         //insertar en tabla de simbolos:
-        TablaSimbolos.insertar(tokens[2], Tipos.valueOf(tokens[1].toUpperCase()));
-        instrucciones.addDeclaracion(valor,TablaSimbolos.consultar(tokens[2]));
+        try{
+            TablaSimbolos.insertar(tokens[2], Tipos.valueOf(tokens[1].toUpperCase()));
+            instrucciones.addDeclaracion(valor,TablaSimbolos.consultar(tokens[2]));
+        }catch (IllegalArgumentException iae){
+            //Ya existe el identificador
+            System.out.println(iae.getMessage());
+            PilaErrores.push(iae.getMessage());
+            instrucciones.addDeclaracion(Tipos.ERROR,TablaSimbolos.consultar(tokens[2]));
+        }
     }
     private Tipos resolver(String [] tokens){
         boolean cadena=false,INT=false,UINT=false,FIXED=false,UFIXED=false;
@@ -48,6 +69,7 @@ public class NodoPrograma extends Nodo{
             if(tokens[i].charAt(0)=='"' || tokens[i].equals("string")){
                 //Es un valor de cadena
                 cadena=true;
+                break;
             }else if(AutomataID.analizar(tokens[i])){
                 Simbolo sym=TablaSimbolos.consultar(tokens[i]);
                 if(sym==null){

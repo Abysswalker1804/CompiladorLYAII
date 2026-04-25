@@ -97,7 +97,7 @@ public class AutomataSintax {
                         pila.push(";");
                         q5(tokens, pos+1);
                     }else{
-                        error=tokens[pos];
+                        error=tokens[pos-1];
                         flag=false;
                     }
             }
@@ -128,7 +128,7 @@ public class AutomataSintax {
                     q4(tokens, pos+1);
                     break;
                 default:
-                    error=tokens[pos];
+                    error=tokens[pos-1];
                     flag=false;
             }
             }
@@ -146,7 +146,7 @@ public class AutomataSintax {
                 if(AutomataID.analizar(tokens[pos])){
                     q5(tokens, pos+1);
                 }else{
-                    error=tokens[pos];
+                    error=tokens[pos-1];
                     flag=false;
                 }
             }
@@ -166,7 +166,7 @@ public class AutomataSintax {
                     q6(tokens, pos+1);
                     break;
                 default:
-                    error=tokens[pos];
+                    error=tokens[pos-1];
                     flag=false;
                 }
             }
@@ -194,7 +194,7 @@ public class AutomataSintax {
                     }else if(AutomataID.analizar(tokens[pos]) || AutomataNumero.analizar(tokens[pos])){
                         q7(tokens, pos+1);
                     }else{
-                        error=tokens[pos];
+                        error=tokens[pos-1];
                         flag=false;
                     }
                 }
@@ -270,7 +270,7 @@ public class AutomataSintax {
                         }
                         break;
                     default:
-                        error=tokens[pos];
+                        error=tokens[pos-1];
                         flag=false;
                 }
             }
@@ -290,7 +290,7 @@ public class AutomataSintax {
                 }else if(AutomataID.analizar(tokens[pos]) || AutomataNumero.analizar(tokens[pos])){
                     q7(tokens, pos+1);
                 }else{
-                    error=tokens[pos];
+                    error=tokens[pos-1];
                     flag=false;
                 }
             }
@@ -320,7 +320,7 @@ public class AutomataSintax {
                         q10(tokens, pos+1);
                         break;
                     default:
-                        error=tokens[pos];
+                        error=tokens[pos-1];
                         flag=false;
                 }
             }
@@ -339,7 +339,7 @@ public class AutomataSintax {
                 }else if(tokens[pos].equals("string")){
                     q11(tokens, pos+1);
                 }else{
-                    error=tokens[pos];
+                    error=tokens[pos-1];
                     flag=false;
                 }
             }
@@ -357,7 +357,7 @@ public class AutomataSintax {
                     pila.push("s");
                     q12(tokens, pos+1);
                 }else{
-                    error=tokens[pos];
+                    error=tokens[pos-1];
                     flag=false;
                 }
             }
@@ -390,7 +390,7 @@ public class AutomataSintax {
                         if(AutomataID.analizar(tokens[pos]) || AutomataNumero.analizar(tokens[pos]))
                             q7(tokens, pos+1);
                         else{
-                            error=tokens[pos];
+                            error=tokens[pos-1];
                             flag=false;
                         }
                 }
@@ -434,7 +434,7 @@ public class AutomataSintax {
                         if(AutomataID.analizar(tokens[pos]) || AutomataNumero.analizar(tokens[pos]))
                             q7(tokens, pos+1);
                         else{
-                            error=tokens[pos];
+                            error=tokens[pos-1];
                             flag=false;
                         }
                 }
@@ -473,11 +473,11 @@ public class AutomataSintax {
                             pila.push("I");
                             q18(tokens, pos+1);
                         }else{
-                            error=tokens[pos];
+                            error=tokens[pos-1];
                             flag=false;
                         }
                     default:
-                        error=tokens[pos];
+                        error=tokens[pos-1];
                         flag=false;
                 }
             }
@@ -495,7 +495,7 @@ public class AutomataSintax {
                     pila.push("I");
                     q18(tokens, pos+1);
                 }else{
-                    error=tokens[pos];
+                    error=tokens[pos-1];
                     flag=false;
                 }
             }
@@ -515,7 +515,7 @@ public class AutomataSintax {
                 }else if(AutomataID.analizar(tokens[pos]) || AutomataNumero.analizar(tokens[pos])){
                     q7(tokens, pos+1);
                 }else{
-                    error=tokens[pos];
+                    error=tokens[pos-1];
                     flag=false;
                 }
             }
@@ -552,7 +552,7 @@ public class AutomataSintax {
                         if(AutomataID.analizar(tokens[pos]) || AutomataNumero.analizar(tokens[pos]))
                             q7(tokens, pos+1);
                         else{
-                            error=tokens[pos];
+                            error=tokens[pos-1];
                             flag=false;
                         }
                 }
@@ -574,11 +574,11 @@ public class AutomataSintax {
                         pila.push("K");
                         q1(tokens, pos+1);
                     }else{
-                        error=tokens[pos];
+                        error=tokens[pos-1];
                         flag=false;
                     }
                 }else{ 
-                    error=tokens[pos];
+                    error=tokens[pos-1];
                     flag=false;
                 }
             }
@@ -588,7 +588,7 @@ public class AutomataSintax {
         if(tokens[pos].charAt(0)=='%' && tokens[pos].charAt(tokens[pos].length()-1)=='%')
             q1(tokens, pos+1);
         else{
-            error=tokens[pos];
+            error=tokens[pos-1];
             flag=false;
         }
     }
@@ -604,7 +604,7 @@ public class AutomataSintax {
                     pila.push("r");
                     q22(tokens, pos+1);
                 }else{
-                    error=tokens[pos];
+                    error=tokens[pos-1];
                     flag=false;
                 }
             }
@@ -623,7 +623,7 @@ public class AutomataSintax {
                 }else if(AutomataCadena.analizar(tokens[pos])){
                     q9(tokens, pos+1);
                 }else{
-                    error=tokens[pos];
+                    error=tokens[pos-1];
                     flag=false;
                 }
             }

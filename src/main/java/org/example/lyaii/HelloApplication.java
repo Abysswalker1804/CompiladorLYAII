@@ -88,6 +88,8 @@ public class HelloApplication extends Application {
             if(AutomataSintax.analizar(codigo_limpio)){
                 cda_error.replaceText(" <CORE> Sintaxis correcta!");
                 //Comeinza análsis semántico
+
+                //popear la pila de errores si hay errores semanticos -> PilaErrores.pop()
             }else{
                 cda_error.replaceText(" <CORE> Error cerca de "+AutomataSintax.getError());
             }
@@ -178,9 +180,6 @@ public class HelloApplication extends Application {
             }
 
         }
-        
-        //Incompleto
-
         if(error_lexico){
             mit_compilar.setDisable(true);
         }else{
