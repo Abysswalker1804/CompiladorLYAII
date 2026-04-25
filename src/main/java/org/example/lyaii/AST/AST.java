@@ -10,8 +10,10 @@ public class AST {
     private NodoPrograma programa;
     public static void main(String []args){
         AST arbol=new AST();
-        String [] tokens={"begin","declare","end"};
+        String [] tokens={"begin","declare","string","$id","=","string","(","9",")",";","end"};
         arbol.crearAST(tokens);
+        boolean flag=arbol.validar(arbol.getPrograma());
+        System.out.println(flag?"Correcto":"Incorrecto");
     }
     public AST(){
         programa=new NodoPrograma();
@@ -35,6 +37,23 @@ public class AST {
                     break;
             }
         }
+    }
+    public boolean validar(Nodo nodo) {
+        if (nodo == null) return true;
+
+        // Si este nodo falla, ya no sigue
+        if (!nodo.check()) return false;
+
+        // Revisar todos los hijos
+        for (Nodo hijo : nodo.hijos) {
+            if (!validar(hijo)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    public NodoPrograma getPrograma(){
+        return programa;
     }
     private void addChild(Palabras palabra){
         programa.addChild(palabra,null);

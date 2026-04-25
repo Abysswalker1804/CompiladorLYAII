@@ -21,6 +21,7 @@ public class Simbolo{
 
     //Este método lanza excepciones personalizadas
     public Simbolo(String nombre, Tipos tipo, String valor){
+        if(valor.equals("")) return;
         this.nombre=nombre;
         int temp;
         switch(tipo){
@@ -65,6 +66,10 @@ public class Simbolo{
             default:
         }
         declarada=true;
+    }
+    public Simbolo(String nombre, Tipos tipo){
+        this.nombre=nombre;
+        this.tipo=tipo;
     }
 
     public void setNombre(String nombre){

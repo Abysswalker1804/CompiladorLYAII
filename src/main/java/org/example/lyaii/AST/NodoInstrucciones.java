@@ -1,15 +1,15 @@
 package org.example.lyaii.AST;
 
+import java.util.ArrayList;
+
 import org.example.lyaii.Enums.Palabras;
 import org.example.lyaii.Enums.Tipos;
 import org.example.lyaii.TablaSimbolos.Simbolo;
 
 public class NodoInstrucciones extends Nodo{
-    
     @Override
     public boolean check() {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
     public void addChild(Nodo hijo){
         hijos.add(hijo);

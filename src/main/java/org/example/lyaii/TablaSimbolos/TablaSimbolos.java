@@ -17,6 +17,12 @@ public class TablaSimbolos {
         else
             tabla.put(nombre, new Simbolo(nombre,tipo,valor));
     }
+    public static void insertar(String nombre, Tipos tipo){
+        if(tabla.containsKey(nombre))
+            throw new IllegalArgumentException("Identificador ya existente");
+        else
+            tabla.put(nombre, new Simbolo(nombre,tipo));
+    }
     public static void actualizar(String nombre, Tipos tipo, String valor){
         if(tabla.containsKey(nombre))
             tabla.put(nombre, new Simbolo(nombre,tipo,valor));

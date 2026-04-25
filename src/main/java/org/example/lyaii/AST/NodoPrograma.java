@@ -7,6 +7,7 @@ import org.example.lyaii.Enums.Tipos;
 import org.example.lyaii.TablaSimbolos.Simbolo;
 import org.example.lyaii.TablaSimbolos.TablaSimbolos;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class NodoPrograma extends Nodo{
@@ -17,10 +18,13 @@ public class NodoPrograma extends Nodo{
         inicio=new NodoInicio();
         instrucciones=new NodoInstrucciones();
         fin=new NodoFin();
+        hijos.add(inicio);
+        hijos.add(instrucciones);
+        hijos.add(fin);
     }
     @Override
     public boolean check() {
-        return false;
+        return true;
     }
     protected void addChild(Palabras palabra, String[] tokens){
         switch (palabra){
@@ -35,7 +39,7 @@ public class NodoPrograma extends Nodo{
         String[]sub= Arrays.copyOfRange(tokens,4, tokens.length);
         Tipos valor=resolver(sub);
         //insertar en tabla de simbolos:
-        TablaSimbolos.insertar(tokens[2], Tipos.valueOf(tokens[1].toUpperCase()),"");
+        TablaSimbolos.insertar(tokens[2], Tipos.valueOf(tokens[1].toUpperCase()));
         instrucciones.addDeclaracion(valor,TablaSimbolos.consultar(tokens[2]));
     }
     private Tipos resolver(String [] tokens){
