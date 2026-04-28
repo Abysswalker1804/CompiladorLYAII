@@ -32,12 +32,13 @@ public class NodoPrograma extends Nodo{
             case PR01 -> inicio.setWord(palabra);
             case PR02 -> fin.setWord(palabra);
             case PR03 -> declaracion(palabra, tokens);
+            case PR09 -> ciclo(palabra,tokens);
         }
     }
     protected void addAsignacion(String [] tokens){
         //Estructura: $id, =, ..., ;
         String[]sub= Arrays.copyOfRange(tokens,2, tokens.length);
-        Tipos valor=resolver(sub);
+        Tipos valor=resolver(sub,tokens[0],null);
         try{
             TablaSimbolos.actualizar(tokens[0],valor);
             instrucciones.addAsignacion(valor,TablaSimbolos.consultar(tokens[0]));
@@ -51,7 +52,7 @@ public class NodoPrograma extends Nodo{
         //Estructura de tokens: declare, tipo, id, =, ..., ;
         //Primero hay que resolver el valor de lo que se está asignando
         String[]sub= Arrays.copyOfRange(tokens,4, tokens.length);
-        Tipos valor=resolver(sub);
+        Tipos valor=resolver(sub,null,tokens[1]);
         //insertar en tabla de simbolos:
         try{
             TablaSimbolos.insertar(tokens[2], Tipos.valueOf(tokens[1].toUpperCase()));
@@ -63,7 +64,18 @@ public class NodoPrograma extends Nodo{
             instrucciones.addDeclaracion(Tipos.ERROR,TablaSimbolos.consultar(tokens[2]));
         }
     }
-    private Tipos resolver(String [] tokens){
+    private void ciclo(Palabras palabra, String[] tokens){
+        //Estructura: loop, (, condicion, ).
+        int i=0;
+        do{i++;}while(!tokens[i].equals(")"));
+        String[]sub=Arrays.copyOfRange(tokens,1,tokens.length);
+        try{
+            if(resolverCondiciones(sub)){}
+        }catch(IllegalArgumentException iae){
+            PilaErrores.push(iae.getMessage());
+        }
+    }
+    private Tipos resolver(String [] tokens, String asg, String dec){
         boolean cadena=false,INT=false,UINT=false,FIXED=false,UFIXED=false;
         for(int i=0; i< tokens.length; i++){
             if(tokens[i].charAt(0)=='"' || tokens[i].equals("string")){
@@ -88,24 +100,66 @@ public class NodoPrograma extends Nodo{
                 double valor_fix;
                 try{
                     valor_int=Integer.parseInt(tokens[i]);
-                    if(valor_int>=0 && valor_int <= 65535){
+                    if(valor_int >= 0 && valor_int <= 32767){
+                        //Compatible con ambos
+                        if(dec!=null){
+                            //Declaracion
+                            if(dec.equals("int"))
+                                INT=true;
+                            else
+                                UINT=true;
+                        }else{
+                            //Asignacion
+                            Simbolo s = TablaSimbolos.consultar(asg);
+                            if(s==null)
+                                return Tipos.ERROR;
+                            else{
+                                switch (s.getTipo()){
+                                    case INT -> INT=true;
+                                    case UINT -> UINT=true;
+                                }
+                            }
+                        }
+                    }else if(valor_int < 0 && valor_int >= -32768){
                         INT=true;
-                    }else if(valor_int>=-32768 && valor_int <= 32767){
+                    }else if(valor_int > 32767 && valor_int <= 65535){
                         UINT=true;
                     }else{
                         System.out.println("Fuera de los límites int/uint");
+                        PilaErrores.push("Fuera de los límites int/uint");
                         return Tipos.ERROR;
                     }
                 }
                 catch(NumberFormatException nfe){
                     //Entonces es fixed
                     valor_fix=Double.parseDouble(tokens[i]);
-                    if(valor_fix>=-128 && valor_fix <= 127.99609375){
+                    if(valor_fix >= 0 && valor_fix <= 127.99609375){
+                        //Compatible con ambos
+                        if(dec!=null){
+                            //Declaracion
+                            if(dec.equals("fixed"))
+                                FIXED=true;
+                            else
+                                UFIXED=true;
+                        }else{
+                            //Asignacion
+                            Simbolo s = TablaSimbolos.consultar(asg);
+                            if(s==null)
+                                return Tipos.ERROR;
+                            else{
+                                switch (s.getTipo()){
+                                    case FIXED -> FIXED=true;
+                                    case UFIXED -> UFIXED=true;
+                                }
+                            }
+                        }
+                    }else if(valor_fix < 0 && valor_fix >= -128){
                         FIXED=true;
-                    }else if(valor_fix>=0 && valor_fix <= 255.99609375){
+                    }else if(valor_fix > 127.99609375 && valor_fix <= 255.99609375){
                         UFIXED=true;
                     }else{
                         System.out.println("Fuera de los límites fixed/ufixed");
+                        PilaErrores.push("Fuera de los límites fixed/ufixed");
                         return Tipos.ERROR;
                     }
                 }catch (Exception e){
@@ -132,5 +186,34 @@ public class NodoPrograma extends Nodo{
         // error: ninguno o más de uno
         System.out.println("Más de un tipo");
         return Tipos.ERROR;
+    }
+    private boolean resolverCondiciones(String [] condicion){
+        //Resolver que todos los valores sean numéricos o booleanos y dentro de los límites
+        //Estructura (, ... ,)
+        for(int i=1; i<=condicion.length-2; i++){
+            if(AutomataID.analizar(condicion[i])){
+                //Revisarlo en la tabla
+                Simbolo sym=TablaSimbolos.consultar(condicion[i]);
+                if(sym==null)
+                    throw new IllegalArgumentException(condicion[i]+" no ha sido declarado.");
+                else{
+                    try{
+                        int valor_int = Integer.parseInt(condicion[i]);
+                        if (valor_int < -32768 || valor_int > 65535)
+                            return false;
+                    }catch (Exception e){
+                        //Entonces es fixed
+                        double valor_fixed=Double.parseDouble(condicion[i]);
+                        if(valor_fixed < -128 || valor_fixed > 255.99609375){
+                            return false;
+                        }
+                    }
+                }
+            }else if(AutomataNumero.analizar(condicion[i])){
+                //Asumir que es un número
+
+            }
+        }
+        return false;
     }
 }

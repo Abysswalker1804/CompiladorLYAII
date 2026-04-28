@@ -11,7 +11,7 @@ public class AST {
     private NodoPrograma programa;
     public static void main(String []args){
         AST arbol=new AST();
-        String [] tokens={"begin","$id","=","0",";","end"};
+        String [] tokens={"begin","declare","uint","$var","=","33000",";","end"};
         arbol.crearAST(tokens);
         boolean flag=arbol.validar(arbol.getPrograma());
         System.out.println(flag?"Correcto":"Incorrecto");
@@ -23,30 +23,39 @@ public class AST {
         String [] sub;
         int j;
         for(int i=0; i<tokens.length; i++){
-            switch (tokens[i]){
-                case "begin":
-                    addChild(Palabras.PR01);
-                    break;
-                case "end":
-                    addChild(Palabras.PR02);
-                    break;
-                case "declare":
-                    //Recortar un pequeño arreglo y mandarlo para crear el nodo
-                    j=i;
-                    do{j++;}while(!tokens[j].equals(";") && j<tokens.length);
-                    sub=Arrays.copyOfRange(tokens,i,j);
-                    addChild(Palabras.PR03, sub);
-                    i=j;
-                    break;
-                default:
-                    if(AutomataID.analizar(tokens[i])){
-                        //Es una asignación
-                        //Estructura: $id, =, ..., ;
-                        j=i;
-                        do{j++;}while(!tokens[j].equals(";") && j<tokens.length);
-                        sub=Arrays.copyOfRange(tokens,i,j);
-                        addAsignacion(sub);
-                    }
+            if(tokens[i].equals("begin")){
+                addChild(Palabras.PR01);
+            }else if(tokens[i].equals("end")){
+                addChild(Palabras.PR02);
+            }else if(tokens[i].equals("loop")){
+                //Recortar un pequeño arreglo hasta ")" y mandarlo para crear el nodo
+                j=i;
+                do{j++;}while(!tokens[j].equals(")"));
+                sub=Arrays.copyOfRange(tokens,i,j+1);
+                addChild(Palabras.PR09, sub);
+            }else{
+                //Recortar un pequeño arreglo y mandarlo para crear el nodo
+                j=i;
+                do{j++;}while(!tokens[j].equals(";"));
+                sub=Arrays.copyOfRange(tokens,i,j);
+                switch (tokens[i]){
+                    case "declare":
+                        addChild(Palabras.PR03, sub);
+                        break;
+                    case "/*":
+                        //Omitir comentarios
+                        break;
+                    default:
+                        if(AutomataID.analizar(tokens[i])){
+                            //Es una asignación
+                            //Estructura: $id, =, ..., ;
+                            j=i;
+                            do{j++;}while(!tokens[j].equals(";") && j<tokens.length);
+                            sub=Arrays.copyOfRange(tokens,i,j);
+                            addAsignacion(sub);
+                        }
+                }
+                i=j;
             }
         }
     }
