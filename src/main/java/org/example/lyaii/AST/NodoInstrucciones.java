@@ -20,4 +20,10 @@ public class NodoInstrucciones extends Nodo{
     public void addAsignacion(Tipos valor, Simbolo sym){
         addChild(new NodoAsignacion(valor,sym));
     }
+    public Nodo giveDeclaracion(Tipos valor, Simbolo sym){
+        return new NodoDeclaracion(Palabras.PR03,valor,sym);
+    }
+    public Nodo giveAsignacion(Tipos valor, Simbolo sym){
+        return new NodoAsignacion(valor,sym);
+    }
 }

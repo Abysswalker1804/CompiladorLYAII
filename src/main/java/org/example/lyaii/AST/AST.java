@@ -3,6 +3,7 @@ package org.example.lyaii.AST;
 import org.example.lyaii.Automatas.AutomataID;
 import org.example.lyaii.Enums.Palabras;
 import org.example.lyaii.TablaSimbolos.Simbolo;
+import org.example.lyaii.Tools.PilaAST;
 
 import java.util.Arrays;
 
@@ -11,7 +12,7 @@ public class AST {
     private NodoPrograma programa;
     public static void main(String []args){
         AST arbol=new AST();
-        String [] tokens={"begin","declare","uint","$var","=","33000",";","end"};
+        String [] tokens={"begin","loop","(","true",")","{","loop","(","true",")","{","declare","int","$var","=","1",";","}","}","end"};
         arbol.crearAST(tokens);
         boolean flag=arbol.validar(arbol.getPrograma());
         System.out.println(flag?"Correcto":"Incorrecto");
@@ -20,6 +21,7 @@ public class AST {
         programa=new NodoPrograma();
     }
     public void crearAST(String [] tokens){
+        PilaAST.iniciar();//Importante para inicializar la pila de nodos
         String [] sub;
         int j;
         for(int i=0; i<tokens.length; i++){
@@ -33,17 +35,24 @@ public class AST {
                 do{j++;}while(!tokens[j].equals(")"));
                 sub=Arrays.copyOfRange(tokens,i,j+1);
                 addChild(Palabras.PR09, sub);
+                i=j;
+                //Hay que meter a la pila AST para saber que hay que construir los nodos dentro del ciclo del ast
             }else{
                 //Recortar un pequeño arreglo y mandarlo para crear el nodo
-                j=i;
-                do{j++;}while(!tokens[j].equals(";"));
-                sub=Arrays.copyOfRange(tokens,i,j);
                 switch (tokens[i]){
                     case "declare":
+                        j=i;
+                        do{j++;}while( j< tokens.length && !tokens[j].equals(";"));
+                        sub=Arrays.copyOfRange(tokens,i,j);
                         addChild(Palabras.PR03, sub);
+                        i=j;
                         break;
                     case "/*":
                         //Omitir comentarios
+                        break;
+                    case "}":
+                        //Cierre de un nodo ciclo o condicional
+                        PilaAST.pop();
                         break;
                     default:
                         if(AutomataID.analizar(tokens[i])){
@@ -53,9 +62,9 @@ public class AST {
                             do{j++;}while(!tokens[j].equals(";") && j<tokens.length);
                             sub=Arrays.copyOfRange(tokens,i,j);
                             addAsignacion(sub);
+                            i=j;
                         }
                 }
-                i=j;
             }
         }
     }

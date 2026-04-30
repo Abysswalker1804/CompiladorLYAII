@@ -6,7 +6,9 @@ import org.example.lyaii.Enums.Palabras;
 import org.example.lyaii.Enums.Tipos;
 import org.example.lyaii.TablaSimbolos.Simbolo;
 import org.example.lyaii.TablaSimbolos.TablaSimbolos;
+import org.example.lyaii.Tools.PilaAST;
 import org.example.lyaii.Tools.PilaErrores;
+import org.example.lyaii.Tools.ShuntingYard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,11 +43,19 @@ public class NodoPrograma extends Nodo{
         Tipos valor=resolver(sub,tokens[0],null);
         try{
             TablaSimbolos.actualizar(tokens[0],valor);
-            instrucciones.addAsignacion(valor,TablaSimbolos.consultar(tokens[0]));
+            Nodo nodoAnidado=PilaAST.peek();
+            if(nodoAnidado==null)
+                instrucciones.addAsignacion(valor,TablaSimbolos.consultar(tokens[0]));
+            else
+                nodoAnidado.hijos.add(instrucciones.giveAsignacion(valor,TablaSimbolos.consultar(tokens[0])));
         }catch (IllegalArgumentException iae){
             System.out.println(iae.getMessage());
             PilaErrores.push(iae.getMessage());
-            instrucciones.addAsignacion(Tipos.ERROR,TablaSimbolos.consultar(tokens[0]));
+            Nodo nodoAnidado=PilaAST.peek();
+            if(nodoAnidado==null)
+                instrucciones.addAsignacion(Tipos.ERROR,TablaSimbolos.consultar(tokens[0]));
+            else
+                nodoAnidado.hijos.add(instrucciones.giveAsignacion(Tipos.ERROR,TablaSimbolos.consultar(tokens[0])));
         }
     }
     private void declaracion(Palabras palabra, String[] tokens){
@@ -56,12 +66,20 @@ public class NodoPrograma extends Nodo{
         //insertar en tabla de simbolos:
         try{
             TablaSimbolos.insertar(tokens[2], Tipos.valueOf(tokens[1].toUpperCase()));
-            instrucciones.addDeclaracion(valor,TablaSimbolos.consultar(tokens[2]));
+            Nodo nodoAnidado=PilaAST.peek();
+            if(nodoAnidado==null)
+                instrucciones.addDeclaracion(valor,TablaSimbolos.consultar(tokens[2]));
+            else
+                nodoAnidado.hijos.add(instrucciones.giveDeclaracion(valor,TablaSimbolos.consultar(tokens[2])));
         }catch (IllegalArgumentException iae){
             //Ya existe el identificador
             System.out.println(iae.getMessage());
             PilaErrores.push(iae.getMessage());
-            instrucciones.addDeclaracion(Tipos.ERROR,TablaSimbolos.consultar(tokens[2]));
+            Nodo nodoAnidado=PilaAST.peek();
+            if(nodoAnidado==null)
+                instrucciones.addDeclaracion(Tipos.ERROR,TablaSimbolos.consultar(tokens[2]));
+            else
+                nodoAnidado.hijos.add(instrucciones.giveDeclaracion(Tipos.ERROR,TablaSimbolos.consultar(tokens[2])));
         }
     }
     private void ciclo(Palabras palabra, String[] tokens){
@@ -69,11 +87,25 @@ public class NodoPrograma extends Nodo{
         int i=0;
         do{i++;}while(!tokens[i].equals(")"));
         String[]sub=Arrays.copyOfRange(tokens,1,tokens.length);
+        NodoCiclo temp;
         try{
-            if(resolverCondiciones(sub)){}
+            boolean condicion=resolverCondiciones(sub);
+            temp=new NodoCiclo(condicion);
+            Nodo nodoAnidado=PilaAST.peek();
+            if(nodoAnidado==null)
+                instrucciones.addChild(temp);
+            else
+                nodoAnidado.hijos.add(temp);
         }catch(IllegalArgumentException iae){
             PilaErrores.push(iae.getMessage());
+            temp=new NodoCiclo(false);
+            Nodo nodoAnidado=PilaAST.peek();
+            if(nodoAnidado==null)
+                instrucciones.addChild(temp);
+            else
+                nodoAnidado.hijos.add(temp);
         }
+        PilaAST.push(temp);
     }
     private Tipos resolver(String [] tokens, String asg, String dec){
         boolean cadena=false,INT=false,UINT=false,FIXED=false,UFIXED=false;
@@ -129,6 +161,13 @@ public class NodoPrograma extends Nodo{
                         PilaErrores.push("Fuera de los límites int/uint");
                         return Tipos.ERROR;
                     }
+                    double res=ShuntingYard.evaluador(ShuntingYard.toPostfix(tokens));
+                    if(res < -32768 || res > 65535){
+                        System.out.println("Expresión sobrepasa el límite permitido para alojar un valor!");
+                        PilaErrores.push("Expresión sobrepasa el límite permitido para alojar un valor!");
+                        return Tipos.ERROR;
+                    }
+
                 }
                 catch(NumberFormatException nfe){
                     //Entonces es fixed
@@ -160,6 +199,12 @@ public class NodoPrograma extends Nodo{
                     }else{
                         System.out.println("Fuera de los límites fixed/ufixed");
                         PilaErrores.push("Fuera de los límites fixed/ufixed");
+                        return Tipos.ERROR;
+                    }
+                    double res=ShuntingYard.evaluador(ShuntingYard.toPostfix(tokens));
+                    if(res < -128 || res > 255.99609375){
+                        System.out.println("Expresión sobrepasa el límite permitido para alojar un valor!");
+                        PilaErrores.push("Expresión sobrepasa el límite permitido para alojar un valor!");
                         return Tipos.ERROR;
                     }
                 }catch (Exception e){
@@ -211,9 +256,19 @@ public class NodoPrograma extends Nodo{
                 }
             }else if(AutomataNumero.analizar(condicion[i])){
                 //Asumir que es un número
-
+                try{
+                    int valor_int = Integer.parseInt(condicion[i]);
+                    if (valor_int < -32768 || valor_int > 65535)
+                        return false;
+                }catch (Exception e){
+                    //Entonces es fixed
+                    double valor_fixed=Double.parseDouble(condicion[i]);
+                    if(valor_fixed < -128 || valor_fixed > 255.99609375){
+                        return false;
+                    }
+                }
             }
         }
-        return false;
+        return true;
     }
 }

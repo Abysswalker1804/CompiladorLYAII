@@ -84,6 +84,14 @@ public class AutomataSintax {
                     hay_if=true;
                     q16(tokens, pos+1);
                     break;
+                case "quit":
+                    espacio=false;
+                    item=pila.pop();
+                    if(item.equals("K")) {
+                        pila.push("K");
+                        q23(tokens, pos + 1);
+                    }
+                    break;
                 case " ":
                 case "\n":
                 case "\t":
@@ -569,14 +577,8 @@ public class AutomataSintax {
             }else{
                 espacio=false;
                 if(tokens[pos].equals("{")){
-                    item=pila.pop();
-                    if(item.equals("K")){
-                        pila.push("K");
-                        q1(tokens, pos+1);
-                    }else{
-                        error=tokens[pos-1];
-                        flag=false;
-                    }
+                    pila.push("K");
+                    q1(tokens, pos+1);
                 }else{ 
                     error=tokens[pos-1];
                     flag=false;
@@ -626,6 +628,19 @@ public class AutomataSintax {
                     error=tokens[pos-1];
                     flag=false;
                 }
+            }
+        }while(espacio);
+    }
+    private static void q23(String [] tokens, int pos){
+        boolean espacio=false;
+        do{
+            if(tokens[pos].trim().isEmpty()){
+                pos++;
+                espacio=true;
+            }else{
+                espacio=false;
+                if(tokens[pos].equals(";"))
+                    q1(tokens,pos+1);
             }
         }while(espacio);
     }
