@@ -4,6 +4,7 @@ import org.example.lyaii.Automatas.AutomataID;
 import org.example.lyaii.Enums.Palabras;
 import org.example.lyaii.TablaSimbolos.Simbolo;
 import org.example.lyaii.Tools.PilaAST;
+import org.example.lyaii.Tools.PilaErrores;
 
 import java.util.Arrays;
 
@@ -12,10 +13,14 @@ public class AST {
     private NodoPrograma programa;
     public static void main(String []args){
         AST arbol=new AST();
-        String [] tokens={"begin","loop","(","true",")","{","loop","(","true",")","{","declare","int","$var","=","1",";","}","}","end"};
+        //String [] tokens={"begin","if","(","true",")","{","loop","(","true",")","{","declare","int","$var","=","1",";","}","}","else","{","if","(","2","<","3",")","{","}","}","end"};
+        String [] tokens={"begin","%comentario%","declare","int","$var","=","1",";","end"};
         arbol.crearAST(tokens);
         boolean flag=arbol.validar(arbol.getPrograma());
         System.out.println(flag?"Correcto":"Incorrecto");
+        while(PilaErrores.peek()!=null){
+            System.out.println(PilaErrores.pop());
+        }
     }
     public AST(){
         programa=new NodoPrograma();
@@ -37,6 +42,15 @@ public class AST {
                 addChild(Palabras.PR09, sub);
                 i=j;
                 //Hay que meter a la pila AST para saber que hay que construir los nodos dentro del ciclo del ast
+            }else if(tokens[i].equals("if")){
+                j=i;
+                do{j++;}while(!tokens[j].equals(")"));
+                sub=Arrays.copyOfRange(tokens,i,j+1);
+                addChild(Palabras.PR10, sub);
+                i=j;
+            }else if(tokens[i].equals("else")){
+                sub=Arrays.copyOfRange(tokens,i,i+1);
+                addChild(Palabras.PR11, sub);
             }else{
                 //Recortar un pequeño arreglo y mandarlo para crear el nodo
                 switch (tokens[i]){
@@ -46,9 +60,6 @@ public class AST {
                         sub=Arrays.copyOfRange(tokens,i,j);
                         addChild(Palabras.PR03, sub);
                         i=j;
-                        break;
-                    case "/*":
-                        //Omitir comentarios
                         break;
                     case "}":
                         //Cierre de un nodo ciclo o condicional

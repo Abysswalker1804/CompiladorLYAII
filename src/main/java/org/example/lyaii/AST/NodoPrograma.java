@@ -34,7 +34,9 @@ public class NodoPrograma extends Nodo{
             case PR01 -> inicio.setWord(palabra);
             case PR02 -> fin.setWord(palabra);
             case PR03 -> declaracion(palabra, tokens);
-            case PR09 -> ciclo(palabra,tokens);
+            case PR09 -> ciclo(tokens);
+            case PR10 -> condicion_if(tokens);
+            case PR11 -> condicion_else(palabra);
         }
     }
     protected void addAsignacion(String [] tokens){
@@ -82,7 +84,7 @@ public class NodoPrograma extends Nodo{
                 nodoAnidado.hijos.add(instrucciones.giveDeclaracion(Tipos.ERROR,TablaSimbolos.consultar(tokens[2])));
         }
     }
-    private void ciclo(Palabras palabra, String[] tokens){
+    private void ciclo(String[] tokens){
         //Estructura: loop, (, condicion, ).
         int i=0;
         do{i++;}while(!tokens[i].equals(")"));
@@ -105,6 +107,40 @@ public class NodoPrograma extends Nodo{
             else
                 nodoAnidado.hijos.add(temp);
         }
+        PilaAST.push(temp);
+    }
+    private void condicion_if(String [] tokens){
+        //Estructura: if, (, condicion, ).
+        int i=0;
+        do{i++;}while(!tokens[i].equals(")"));
+        String[]sub=Arrays.copyOfRange(tokens,1,tokens.length);
+        NodoIF temp;
+        try{
+            boolean condicion=resolverCondiciones(sub);
+            temp=new NodoIF(condicion);
+            Nodo nodoAnidado=PilaAST.peek();
+            if(nodoAnidado==null)
+                instrucciones.addChild(temp);
+            else
+                nodoAnidado.hijos.add(temp);
+        }catch(IllegalArgumentException iae){
+            PilaErrores.push(iae.getMessage());
+            temp=new NodoIF(false);
+            Nodo nodoAnidado=PilaAST.peek();
+            if(nodoAnidado==null)
+                instrucciones.addChild(temp);
+            else
+                nodoAnidado.hijos.add(temp);
+        }
+        PilaAST.push(temp);
+    }
+    private void condicion_else(Palabras palabra){
+        NodoElse temp=new NodoElse(palabra);
+        Nodo nodoAnidado=PilaAST.peek();
+        if(nodoAnidado==null)
+            instrucciones.addChild(temp);
+        else
+            nodoAnidado.hijos.add(temp);
         PilaAST.push(temp);
     }
     private Tipos resolver(String [] tokens, String asg, String dec){

@@ -8,4 +8,7 @@ public class PilaErrores {
     public static String pop(){
         return pila.pop();
     }
+    public static String peek(){
+        return pila.peek();
+    }
 }
