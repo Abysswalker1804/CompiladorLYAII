@@ -11,4 +11,11 @@ public class PilaErrores {
     public static String peek(){
         return pila.peek();
     }
+    //Este método vacía la pila entera
+    public static String[] dump(){
+        int size=pila.size();
+        String[] temp=new String[size];
+        for(int i=0; i<size;i++){temp[i]=pila.pop();}
+        return temp;
+    }
 }

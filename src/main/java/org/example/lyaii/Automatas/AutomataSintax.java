@@ -105,7 +105,7 @@ public class AutomataSintax {
                         pila.push(";");
                         q5(tokens, pos+1);
                     }else{
-                        error=tokens[pos-1];
+                        error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+"!";
                         flag=false;
                     }
             }
@@ -116,6 +116,9 @@ public class AutomataSintax {
         String item=pila.pop();
         if(tokens.length==pos && item==null){
             flag=true;
+        }else{
+            error=(tokens[pos]==null)?tokens[pos-1]:tokens[pos];
+            flag=false;
         }
     }
     private static void q3(String [] tokens, int pos ){
@@ -136,7 +139,7 @@ public class AutomataSintax {
                     q4(tokens, pos+1);
                     break;
                 default:
-                    error=tokens[pos-1];
+                    error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba tipo de dato!";
                     flag=false;
             }
             }
@@ -154,7 +157,7 @@ public class AutomataSintax {
                 if(AutomataID.analizar(tokens[pos])){
                     q5(tokens, pos+1);
                 }else{
-                    error=tokens[pos-1];
+                    error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba un identificador!";
                     flag=false;
                 }
             }
@@ -174,7 +177,7 @@ public class AutomataSintax {
                     q6(tokens, pos+1);
                     break;
                 default:
-                    error=tokens[pos-1];
+                    error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba un símbolo de asignación '='!";
                     flag=false;
                 }
             }
@@ -196,13 +199,14 @@ public class AutomataSintax {
                     break;
                 case "string":
                     q11(tokens, pos+1);
+                    break;
                 default:
                     if(AutomataCadena.analizar(tokens[pos])){
                         q9(tokens, pos+1);
                     }else if(AutomataID.analizar(tokens[pos]) || AutomataNumero.analizar(tokens[pos])){
                         q7(tokens, pos+1);
                     }else{
-                        error=tokens[pos-1];
+                        error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba un valor numérico o de cadena!";
                         flag=false;
                     }
                 }
@@ -278,7 +282,7 @@ public class AutomataSintax {
                         }
                         break;
                     default:
-                        error=tokens[pos-1];
+                        error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba algún tipo de operador aritmético o relacional!";
                         flag=false;
                 }
             }
@@ -298,7 +302,7 @@ public class AutomataSintax {
                 }else if(AutomataID.analizar(tokens[pos]) || AutomataNumero.analizar(tokens[pos])){
                     q7(tokens, pos+1);
                 }else{
-                    error=tokens[pos-1];
+                    error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba un numéro o identificador!";
                     flag=false;
                 }
             }
@@ -328,7 +332,7 @@ public class AutomataSintax {
                         q10(tokens, pos+1);
                         break;
                     default:
-                        error=tokens[pos-1];
+                        error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba un ';'!";
                         flag=false;
                 }
             }
@@ -347,7 +351,7 @@ public class AutomataSintax {
                 }else if(tokens[pos].equals("string")){
                     q11(tokens, pos+1);
                 }else{
-                    error=tokens[pos-1];
+                    error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba un valor cadena!";
                     flag=false;
                 }
             }
@@ -365,7 +369,7 @@ public class AutomataSintax {
                     pila.push("s");
                     q12(tokens, pos+1);
                 }else{
-                    error=tokens[pos-1];
+                    error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba un '('!";
                     flag=false;
                 }
             }
@@ -398,7 +402,7 @@ public class AutomataSintax {
                         if(AutomataID.analizar(tokens[pos]) || AutomataNumero.analizar(tokens[pos]))
                             q7(tokens, pos+1);
                         else{
-                            error=tokens[pos-1];
+                            error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba un ')' o ';' !";
                             flag=false;
                         }
                 }
@@ -421,6 +425,7 @@ public class AutomataSintax {
     }
     private static void q14(String [] tokens, int pos ){
         boolean espacio=false;
+        String item;
         do{
             if(tokens[pos].trim().isEmpty()){
                 pos++;
@@ -438,11 +443,18 @@ public class AutomataSintax {
                     case "true":
                         q15(tokens, pos+1);
                         break;
+                    case "{":
+                        item=pila.pop();
+                        if(item.equals("K")){
+                            pila.push("K");
+                            q1(tokens, pos+1);
+                        }
+                        break;
                     default:
                         if(AutomataID.analizar(tokens[pos]) || AutomataNumero.analizar(tokens[pos]))
                             q7(tokens, pos+1);
                         else{
-                            error=tokens[pos-1];
+                            error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba un '{'!";
                             flag=false;
                         }
                 }
@@ -481,11 +493,11 @@ public class AutomataSintax {
                             pila.push("I");
                             q18(tokens, pos+1);
                         }else{
-                            error=tokens[pos-1];
+                            error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+"!";
                             flag=false;
                         }
                     default:
-                        error=tokens[pos-1];
+                        error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba un ')' u operador lógico!";
                         flag=false;
                 }
             }
@@ -503,7 +515,7 @@ public class AutomataSintax {
                     pila.push("I");
                     q18(tokens, pos+1);
                 }else{
-                    error=tokens[pos-1];
+                    error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba un '('!";
                     flag=false;
                 }
             }
@@ -523,7 +535,7 @@ public class AutomataSintax {
                 }else if(AutomataID.analizar(tokens[pos]) || AutomataNumero.analizar(tokens[pos])){
                     q7(tokens, pos+1);
                 }else{
-                    error=tokens[pos-1];
+                    error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba un valor numérico o identificador!";
                     flag=false;
                 }
             }
@@ -560,7 +572,7 @@ public class AutomataSintax {
                         if(AutomataID.analizar(tokens[pos]) || AutomataNumero.analizar(tokens[pos]))
                             q7(tokens, pos+1);
                         else{
-                            error=tokens[pos-1];
+                            error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba un '{'!";
                             flag=false;
                         }
                 }
@@ -569,7 +581,6 @@ public class AutomataSintax {
     }
     private static void q19(String [] tokens, int pos ){
         boolean espacio=false;
-        String item;
         do{
             if(tokens[pos].trim().isEmpty()){
                 pos++;
@@ -580,7 +591,7 @@ public class AutomataSintax {
                     pila.push("K");
                     q1(tokens, pos+1);
                 }else{ 
-                    error=tokens[pos-1];
+                    error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba un '{'!";
                     flag=false;
                 }
             }
@@ -590,7 +601,7 @@ public class AutomataSintax {
         if(tokens[pos].charAt(0)=='%' && tokens[pos].charAt(tokens[pos].length()-1)=='%')
             q1(tokens, pos+1);
         else{
-            error=tokens[pos-1];
+            error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+"!";
             flag=false;
         }
     }
@@ -606,7 +617,7 @@ public class AutomataSintax {
                     pila.push("r");
                     q22(tokens, pos+1);
                 }else{
-                    error=tokens[pos-1];
+                    error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba un '('!";
                     flag=false;
                 }
             }
@@ -625,7 +636,7 @@ public class AutomataSintax {
                 }else if(AutomataCadena.analizar(tokens[pos])){
                     q9(tokens, pos+1);
                 }else{
-                    error=tokens[pos-1];
+                    error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba un valor de tipo cadena!";
                     flag=false;
                 }
             }

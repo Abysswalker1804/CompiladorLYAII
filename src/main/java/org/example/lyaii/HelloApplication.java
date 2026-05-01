@@ -1,6 +1,7 @@
 package org.example.lyaii;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -13,6 +14,7 @@ import javafx.stage.Stage;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.kordamp.bootstrapfx.scene.layout.Panel;
+import org.example.lyaii.AST.AST;
 import org.example.lyaii.Automatas.AutomataCadena;
 import org.example.lyaii.Automatas.AutomataID;
 import org.example.lyaii.Automatas.AutomataNumero;
@@ -21,6 +23,7 @@ import org.example.lyaii.Automatas.AutomataSintax;
 import org.example.lyaii.Enums.Tipos;
 import org.example.lyaii.TablaSimbolos.Simbolo;
 import org.example.lyaii.TablaSimbolos.TablaSimbolos;
+import org.example.lyaii.Tools.PilaErrores;
 import org.fxmisc.richtext.CodeArea;
 
 import java.io.IOException;
@@ -86,12 +89,30 @@ public class HelloApplication extends Application {
         mit_compilar.setOnAction(event -> {
             String[] codigo_limpio=Tokenizador.limpiar(limpiar(codigoArreglo));
             if(AutomataSintax.analizar(codigo_limpio)){
-                cda_error.replaceText(" <CORE> Sintaxis correcta!");
+                cda_error.replaceText("<CORE>: Sintaxis correcta!");
+                //Dar ilusión de estar cargando
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(3000);
+                        Platform.runLater(() -> {
+                            // actualizar UI aquí
+                        });
+                    } catch (InterruptedException e) {}
+                }).start();
                 //Comeinza análsis semántico
-
+                AST ast=new AST();
+                ast.crearAST(codigo_limpio);
+                if(ast.validar(ast.getPrograma())){
+                    cda_error.replaceText("<CORE>: Código validado!");
+                }else{
+                    String [] errores=PilaErrores.dump();
+                    for(String error: errores){
+                        cda_error.appendText("<CORE>: "+error);
+                    }
+                }
                 //popear la pila de errores si hay errores semanticos -> PilaErrores.pop()
             }else{
-                cda_error.replaceText(" <CORE> Error cerca de "+AutomataSintax.getError());
+                cda_error.replaceText(AutomataSintax.getError());
             }
         });
 
@@ -177,13 +198,20 @@ public class HelloApplication extends Application {
             }else{
                 creadorSpans.add(Collections.singleton("error"),length);
                 error_lexico=true;
+                PilaErrores.push(palabra+" no se reconoce!");
             }
 
         }
         if(error_lexico){
+            cda_error.replaceText("");
             mit_compilar.setDisable(true);
+            String[] errores=PilaErrores.dump();
+            for(String error: errores){
+                cda_error.appendText("<CORE>: "+error+"\n");
+            }
         }else{
             mit_compilar.setDisable(false);
+            cda_error.replaceText("<CORE>: Todo en orden.");
         }
 
         return creadorSpans.create();
@@ -369,4 +397,8 @@ class Tokenizador{
         }
         return nuevo;
     }
+}
+
+class CorrectorLexico extends Thread{
+    public void checar(){}
 }

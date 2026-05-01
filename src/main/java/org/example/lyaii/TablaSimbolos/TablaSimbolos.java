@@ -67,4 +67,16 @@ public class TablaSimbolos {
             }
         });
     }
+    public static String[] getIDS(){
+        String [] ids=new String[tabla.size()];
+        int i=0;
+        for(Simbolo sym: tabla.values()){
+            ids[i]=sym.getNombre().replace("$", "");
+            i++;
+        }
+        return ids;
+    }
+    public static void inicializar(){
+        tabla.clear();
+    }
 }

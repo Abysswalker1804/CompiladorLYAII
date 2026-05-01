@@ -3,6 +3,7 @@ package org.example.lyaii.AST;
 import org.example.lyaii.Automatas.AutomataID;
 import org.example.lyaii.Enums.Palabras;
 import org.example.lyaii.TablaSimbolos.Simbolo;
+import org.example.lyaii.TablaSimbolos.TablaSimbolos;
 import org.example.lyaii.Tools.PilaAST;
 import org.example.lyaii.Tools.PilaErrores;
 
@@ -27,6 +28,7 @@ public class AST {
     }
     public void crearAST(String [] tokens){
         PilaAST.iniciar();//Importante para inicializar la pila de nodos
+        TablaSimbolos.inicializar(); //Importante para inicializar la tabla de símbolos
         String [] sub;
         int j;
         for(int i=0; i<tokens.length; i++){

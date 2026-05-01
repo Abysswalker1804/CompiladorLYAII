@@ -51,4 +51,10 @@ public class Pila{
             }
         }
     }
+    public int size(){
+        int i=0;
+        Item aux=tope;
+        while(aux!=null){aux=aux.getSiguiente(); i++;}
+        return i;
+    }
 }
