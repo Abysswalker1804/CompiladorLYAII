@@ -230,7 +230,13 @@ public class AutomataSintax {
                             q7(tokens, pos+1);
                         }else if(item.equals("s")){
                             q12(tokens, pos+1);
-                        }
+                        }if(item.equals("L")){
+                            pila.push("K");
+                            q14(tokens, pos+1);
+                        }else if(item.equals("I")){
+                            pila.push("K");
+                            q18(tokens, pos+1);
+                    }
                         break;
                     case ";":
                         item=pila.pop();

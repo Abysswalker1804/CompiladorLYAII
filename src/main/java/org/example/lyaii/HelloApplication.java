@@ -27,8 +27,10 @@ import org.example.lyaii.Tools.PilaErrores;
 import org.fxmisc.richtext.CodeArea;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class HelloApplication extends Application {
     private Scene scene;
@@ -105,6 +107,7 @@ public class HelloApplication extends Application {
                 if(ast.validar(ast.getPrograma())){
                     cda_error.replaceText("<CORE>: Código validado!");
                 }else{
+                    cda_error.replaceText("");
                     String [] errores=PilaErrores.dump();
                     for(String error: errores){
                         cda_error.appendText("<CORE>: "+error);
@@ -112,7 +115,8 @@ public class HelloApplication extends Application {
                 }
                 //popear la pila de errores si hay errores semanticos -> PilaErrores.pop()
             }else{
-                cda_error.replaceText(AutomataSintax.getError());
+                String error=AutomataSintax.getError();
+                cda_error.replaceText(error==null?"Error Sintáctico!":error);
             }
         });
 
@@ -372,7 +376,7 @@ class Tokenizador{
             aux[i-1]=tokens[i];
         }
         tokens=aux;
-        return tokens;
+        return unirOperadores(tokens);
     }
     private static void addToken(String token){
         String [] aux;
@@ -396,6 +400,27 @@ class Tokenizador{
             }
         }
         return nuevo;
+    }
+    public static String[] unirOperadores(String[] tokens) {
+        List<String> resultado = new ArrayList<>();
+
+        for (int i = 0; i < tokens.length; i++) {
+            String actual = tokens[i];
+
+            // Verifica si es uno de los operadores que te interesan
+            if ((actual.equals("=") || actual.equals("!") || actual.equals("<") || actual.equals(">"))
+                    && i + 1 < tokens.length
+                    && tokens[i + 1].equals("=")) {
+
+                // Une con el siguiente "="
+                resultado.add(actual + "=");
+                i++; // Saltamos el siguiente porque ya lo usamos
+            } else {
+                resultado.add(actual);
+            }
+        }
+
+        return resultado.toArray(new String[0]);
     }
 }
 

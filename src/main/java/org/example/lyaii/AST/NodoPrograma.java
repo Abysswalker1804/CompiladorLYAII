@@ -50,6 +50,8 @@ public class NodoPrograma extends Nodo{
                 instrucciones.addAsignacion(valor,TablaSimbolos.consultar(tokens[0]));
             else
                 nodoAnidado.hijos.add(instrucciones.giveAsignacion(valor,TablaSimbolos.consultar(tokens[0])));
+            if(valor != TablaSimbolos.consultar(tokens[2]).getTipo())
+                PilaErrores.push("Dato no compatible con la declaración de variable!");
         }catch (IllegalArgumentException iae){
             System.out.println(iae.getMessage());
             PilaErrores.push(iae.getMessage());
@@ -73,6 +75,8 @@ public class NodoPrograma extends Nodo{
                 instrucciones.addDeclaracion(valor,TablaSimbolos.consultar(tokens[2]));
             else
                 nodoAnidado.hijos.add(instrucciones.giveDeclaracion(valor,TablaSimbolos.consultar(tokens[2])));
+            if(valor != TablaSimbolos.consultar(tokens[2]).getTipo())
+                PilaErrores.push("Dato no compatible con la declaración de variable!");
         }catch (IllegalArgumentException iae){
             //Ya existe el identificador
             System.out.println(iae.getMessage());
@@ -266,6 +270,7 @@ public class NodoPrograma extends Nodo{
         }
         // error: ninguno o más de uno
         System.out.println("Más de un tipo");
+        PilaErrores.push("Más de un tipo!");
         return Tipos.ERROR;
     }
     private boolean resolverCondiciones(String [] condicion){
@@ -277,7 +282,8 @@ public class NodoPrograma extends Nodo{
                 Simbolo sym=TablaSimbolos.consultar(condicion[i]);
                 if(sym==null)
                     throw new IllegalArgumentException(condicion[i]+" no ha sido declarado.");
-                else{
+                /*else{
+                    //se asume que están bien
                     try{
                         int valor_int = Integer.parseInt(condicion[i]);
                         if (valor_int < -32768 || valor_int > 65535)
@@ -289,7 +295,7 @@ public class NodoPrograma extends Nodo{
                             return false;
                         }
                     }
-                }
+                }*/
             }else if(AutomataNumero.analizar(condicion[i])){
                 //Asumir que es un número
                 try{

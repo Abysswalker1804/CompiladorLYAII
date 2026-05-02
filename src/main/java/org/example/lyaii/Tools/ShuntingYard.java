@@ -1,5 +1,7 @@
 package org.example.lyaii.Tools;
 
+import org.example.lyaii.Automatas.AutomataID;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -84,7 +86,10 @@ public class ShuntingYard {
         Pila pila=new Pila();
         double temp1,temp2,res=0;
         for(String token: postfix){
-            if(precedencia.containsKey(token)){
+            if(AutomataID.analizar(token)){
+                //Ignora los identificadores
+                pila.push("0");
+            }else if(precedencia.containsKey(token)){
                 temp1=Double.parseDouble(pila.pop());
                 temp2=Double.parseDouble(pila.pop());
                 switch (token){
