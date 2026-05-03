@@ -37,6 +37,7 @@ public class NodoPrograma extends Nodo{
             case PR09 -> ciclo(tokens);
             case PR10 -> condicion_if(tokens);
             case PR11 -> condicion_else(palabra);
+            default -> {}
         }
     }
     protected void addAsignacion(String [] tokens){
@@ -44,7 +45,16 @@ public class NodoPrograma extends Nodo{
         String[]sub= Arrays.copyOfRange(tokens,2, tokens.length);
         Tipos valor=resolver(sub,tokens[0],null);
         try{
-            TablaSimbolos.actualizar(tokens[0],valor);
+            if(valor!=Tipos.STRING){
+                double valorSimbolo=evaluar(sub);
+                if(valor==Tipos.INT || valor==Tipos.UINT)
+                    TablaSimbolos.actualizar(tokens[0],valor,((int)valorSimbolo)+"");
+                else if(valor==Tipos.FIXED || valor==Tipos.UFIXED)
+                    TablaSimbolos.actualizar(tokens[0],valor,(valorSimbolo)+"");
+            }else{
+                String valorSimbolo=evaluarString(sub);
+                TablaSimbolos.actualizar(tokens[0],valor,valorSimbolo);
+            }
             Nodo nodoAnidado=PilaAST.peek();
             if(nodoAnidado==null)
                 instrucciones.addAsignacion(valor,TablaSimbolos.consultar(tokens[0]));
@@ -69,10 +79,19 @@ public class NodoPrograma extends Nodo{
         Tipos valor=resolver(sub,null,tokens[1]);
         //insertar en tabla de simbolos:
         try{
-            TablaSimbolos.insertar(tokens[2], Tipos.valueOf(tokens[1].toUpperCase()));
+            if(valor!=Tipos.STRING){
+                double valorSimbolo=evaluar(sub);
+                if(valor==Tipos.INT || valor==Tipos.UINT)
+                    TablaSimbolos.insertar(tokens[2],valor,((int)valorSimbolo)+"");
+                else if(valor==Tipos.FIXED || valor==Tipos.UFIXED)
+                    TablaSimbolos.insertar(tokens[2],valor,(valorSimbolo)+"");
+            }else{
+                String valorSimbolo=evaluarString(sub);
+                TablaSimbolos.insertar(tokens[2],valor,valorSimbolo);
+            }
             Nodo nodoAnidado=PilaAST.peek();
             if(nodoAnidado==null)
-                instrucciones.addDeclaracion(valor,TablaSimbolos.consultar(tokens[2]));
+                instrucciones.addDeclaracion(Tipos.valueOf(tokens[1].toUpperCase()),TablaSimbolos.consultar(tokens[2]));
             else
                 nodoAnidado.hijos.add(instrucciones.giveDeclaracion(valor,TablaSimbolos.consultar(tokens[2])));
             if(valor != TablaSimbolos.consultar(tokens[2]).getTipo())
@@ -165,6 +184,7 @@ public class NodoPrograma extends Nodo{
                         case UINT -> UINT=true;
                         case FIXED -> FIXED=true;
                         case UFIXED -> UFIXED=true;
+                        default -> {}
                     }
                 }
             }else if(AutomataNumero.analizar(tokens[i])){
@@ -189,6 +209,7 @@ public class NodoPrograma extends Nodo{
                                 switch (s.getTipo()){
                                     case INT -> INT=true;
                                     case UINT -> UINT=true;
+                                    default -> {}
                                 }
                             }
                         }
@@ -312,5 +333,41 @@ public class NodoPrograma extends Nodo{
             }
         }
         return true;
+    }
+    private double evaluar(String [] expresion){
+        return ShuntingYard.evaluador(ShuntingYard.toPostfix(expresion));
+    }
+    public static String evaluarString(String[] arr) {
+        StringBuilder resultado = new StringBuilder();
+
+        boolean enParentesis = false;
+
+        for (String token : arr) {
+
+            // Detectar inicio de paréntesis
+            if (token.contains("(")) {
+                enParentesis = true;
+                continue;
+            }
+
+            // Detectar fin de paréntesis
+            if (token.contains(")")) {
+                enParentesis = false;
+                continue;
+            }
+
+            // Si estamos dentro de paréntesis, agregar
+            if (enParentesis) {
+                resultado.append(token);
+                continue;
+            }
+
+            // Si es una cadena entre comillas
+            if (token.startsWith("\"") && token.endsWith("\"")) {
+                resultado.append(token.substring(1, token.length() - 1));
+            }
+        }
+
+        return resultado.toString();
     }
 }

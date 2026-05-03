@@ -145,6 +145,7 @@ public class HelloApplication extends Application {
         cda_consola = new CodeArea();
         cda_error   = new CodeArea();
         cda_error.setEditable(false);
+        cda_error.setWrapText(true);
         IniciarEditor();
 
         header    = crearHeader();

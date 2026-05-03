@@ -23,42 +23,47 @@ public class Simbolo{
     public Simbolo(String nombre, Tipos tipo, String valor){
         if(valor.equals("")) return;
         this.nombre=nombre;
-        int temp;
         switch(tipo){
             case STRING:
                 valor_str=valor;
                 break;
             case INT:
             case UINT:
-                temp=0;
-                try{temp=Integer.parseInt(valor);}
+                int temp=0;
+                try{
+                    temp=Integer.parseInt(valor);
+                    if(temp >= 0 && temp <= 32767){
+                        if(tipo==Tipos.INT)
+                            this.tipo=Tipos.INT;
+                        else
+                            this.tipo=Tipos.UINT;
+                    }else if(temp < 0 && temp >= -32768)
+                        this.tipo=Tipos.INT;
+                    else if(temp > 32767 && temp <= 65535)
+                        this.tipo=Tipos.UINT;
+                    this.valor_int=temp;
+                }
                 catch(Exception e){
                     throw new IllegalArgumentException("Valor no compatible con INT ni con UINT");}
-                if(tipo==Tipos.UINT && valor_int>=0 && valor_int <= 65535){
-                    this.valor_int=temp;
-                    this.tipo=Tipos.UINT;
-                }else if(tipo==Tipos.INT && valor_int>=-32768 && valor_int <= 32767){
-                    this.valor_int=temp;
-                    this.tipo=Tipos.INT;
-                }else{
-                    throw new IndexOutOfBoundsException("Valor fuera de límites para tipo de dato INT o UINT");
-                }
                 break;
             case UFIXED:
             case FIXED:
-                temp=0;
-                try{temp=Integer.parseInt(valor);}
+                double aux=0;
+                try{
+                    aux=Double.parseDouble(valor);
+                    if(aux >= 0 && aux <= 127.99609375){
+                        if(tipo==Tipos.FIXED)
+                            this.tipo=Tipos.FIXED;
+                        else
+                            this.tipo=Tipos.UFIXED;
+                    }else if(aux < 0 && aux >= -128)
+                        this.tipo=Tipos.FIXED;
+                    else if(aux > 127.99609375 && aux <= 255.99609375)
+                        this.tipo=Tipos.UFIXED;
+                    this.valor_fix=aux;
+                }
                 catch(Exception e){
                     throw new IllegalArgumentException("Valor no compatible con FIXED ni con UFIXED");}
-                if(tipo==Tipos.FIXED && valor_fix>=-128 && valor_fix <= 127.99609375){
-                    this.valor_fix=temp;
-                    this.tipo=Tipos.FIXED;
-                }else if(tipo==Tipos.UFIXED && valor_fix>=0 && valor_fix <= 255.99609375){
-                    this.valor_fix=temp;
-                    this.tipo=Tipos.UFIXED;
-                }else{
-                    throw new IndexOutOfBoundsException("Valor fuera de límites para tipo de dato FIXED o UFIXED");
-                }
                 break;
             case NULL:
                 tipo=Tipos.NULL;
@@ -71,7 +76,6 @@ public class Simbolo{
         this.nombre=nombre;
         this.tipo=tipo;
     }
-
     public void setNombre(String nombre){
         this.nombre=nombre;
     }

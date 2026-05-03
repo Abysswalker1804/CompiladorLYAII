@@ -1,6 +1,8 @@
 package org.example.lyaii.Tools;
 
 import org.example.lyaii.Automatas.AutomataID;
+import org.example.lyaii.TablaSimbolos.Simbolo;
+import org.example.lyaii.TablaSimbolos.TablaSimbolos;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -87,7 +89,18 @@ public class ShuntingYard {
         double temp1,temp2,res=0;
         for(String token: postfix){
             if(AutomataID.analizar(token)){
-                //Ignora los identificadores
+                Simbolo sym = TablaSimbolos.consultar(token);
+                switch(sym.getTipo()){
+                    case INT:
+                    case UINT:
+                        pila.push(sym.getValorInt()+"");
+                        break;
+                    case FIXED:
+                    case UFIXED:
+                        pila.push(sym.getValorFix()+"");
+                        break;
+                    default:
+                }
                 pila.push("0");
             }else if(precedencia.containsKey(token)){
                 temp1=Double.parseDouble(pila.pop());
