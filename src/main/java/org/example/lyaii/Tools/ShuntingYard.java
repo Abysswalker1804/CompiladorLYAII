@@ -101,7 +101,6 @@ public class ShuntingYard {
                         break;
                     default:
                 }
-                pila.push("0");
             }else if(precedencia.containsKey(token)){
                 temp1=Double.parseDouble(pila.pop());
                 temp2=Double.parseDouble(pila.pop());

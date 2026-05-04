@@ -41,6 +41,8 @@ public class Simbolo{
                         this.tipo=Tipos.INT;
                     else if(temp > 32767 && temp <= 65535)
                         this.tipo=Tipos.UINT;
+                    else
+                        throw new IllegalArgumentException("Valor fuera de los límites de la capacidad!");
                     this.valor_int=temp;
                 }
                 catch(Exception e){
@@ -60,6 +62,8 @@ public class Simbolo{
                         this.tipo=Tipos.FIXED;
                     else if(aux > 127.99609375 && aux <= 255.99609375)
                         this.tipo=Tipos.UFIXED;
+                    else
+                        throw new IllegalArgumentException("Valor fuera de los límites de la capacidad!");
                     this.valor_fix=aux;
                 }
                 catch(Exception e){

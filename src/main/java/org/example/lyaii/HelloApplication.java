@@ -19,6 +19,7 @@ import javafx.scene.shape.SVGPath;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.example.lyaii.Assembly8086.GeneradorASM;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.example.lyaii.AST.AST;
@@ -757,6 +758,8 @@ public class HelloApplication extends Application {
             if (ast.validar(ast.getPrograma())) {
                 setStatus(success(), "Código validado");
                 cda_error.replaceText("<CORE>: Código validado!\n");
+                //Generación de código asm
+                GeneradorASM.generar(codigo_limpio);
             } else {
                 setStatus(danger(), "Error semántico");
                 cda_error.replaceText("");
@@ -875,8 +878,8 @@ class Tokenizador {
     public static String[] tokenizar(String texto) {
         tokens = new String[1];
         char caracter;
-        String espacio = "", palabra = "", comentario = "";
-        boolean flag_comentario = false;
+        String espacio = "", palabra = "", comentario = "", cadena="";
+        boolean flag_cadena=false,flag_comentario = false;
         for (int i = 0; i < texto.length(); i++) {
             caracter = texto.charAt(i);
             switch (caracter) {
@@ -884,7 +887,10 @@ class Tokenizador {
                     if (flag_comentario) {
                         comentario += caracter;
                         if (i == texto.length() - 1) addToken(comentario);
-                    } else {
+                    } else if(flag_cadena){
+                        cadena += caracter;
+                        if (i == texto.length() - 1) addToken(cadena);
+                    }else{
                         espacio += caracter;
                         if (!palabra.isEmpty()) { addToken(palabra); palabra = ""; }
                         else if (tokens[0] == null) { tokens[0] = palabra; palabra = ""; }
@@ -920,11 +926,22 @@ class Tokenizador {
                         else if (tokens[0] == null) { tokens[0] = espacio; espacio = ""; }
                     }
                     break;
+                case '"':
+                    if (!palabra.isEmpty()) { addToken(palabra); palabra = ""; }
+                    if (!espacio.isEmpty()) { addToken(espacio); espacio = ""; }
+                    if (flag_cadena) {
+                        flag_cadena = false; cadena += caracter;
+                        addToken(cadena); cadena = "";
+                    } else { flag_cadena = true; cadena += caracter; }
+                    break;
                 default:
                     if (flag_comentario) {
                         comentario += caracter;
                         if (i == texto.length() - 1) addToken(comentario);
-                    } else {
+                    } else if(flag_cadena){
+                        cadena += caracter;
+                        if (i == texto.length() - 1) addToken(cadena);
+                    }else{
                         if (palabra.contains("|") || palabra.contains("&")) {
                             addToken(palabra); palabra = "";
                         }

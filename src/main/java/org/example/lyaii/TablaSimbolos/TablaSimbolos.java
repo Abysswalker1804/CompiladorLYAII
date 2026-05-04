@@ -79,4 +79,13 @@ public class TablaSimbolos {
     public static void inicializar(){
         tabla.clear();
     }
+    public static Simbolo[] getAll(){
+        Simbolo [] all=new Simbolo[tabla.size()];
+        int i=0;
+        for(Simbolo sym: tabla.values()){
+            all[i]=sym;
+            i++;
+        }
+        return all;
+    }
 }
