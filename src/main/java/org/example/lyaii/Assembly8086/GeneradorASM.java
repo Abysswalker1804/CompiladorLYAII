@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.example.lyaii.AST.NodoPrograma;
-import org.example.lyaii.TablaSimbolos.Simbolo;
-import org.example.lyaii.TablaSimbolos.TablaSimbolos;
+import org.example.lyaii.Automatas.AutomataID;
+import org.example.lyaii.Automatas.AutomataNumero;
 import org.example.lyaii.Tools.Pila;
 import org.example.lyaii.Tools.ShuntingYard;
 
@@ -26,15 +26,13 @@ public class GeneradorASM {
         BufferedWriter escritor=null;
         try{
             escritor = new BufferedWriter(new FileWriter("obj.asm"));
-            codigoAEscrbir=(".model small\n.stack 100h\n\n");
+            codigoAEscrbir=(".model small\n.stack 100h\n");
             codigoAEscrbir=codigoAEscrbir+(".data\n");
 
             //Escribir Símbolos
-            boolean hay_variables=false;
             for(int j,i=0;i<codigo.length;i++){
                 String token=codigo[i];
                 if(token.equals("declare")){
-                    hay_variables=true;
                     j=i;
                     while(!codigo[j].equals(";")){j++;}
                     String[] sub= Arrays.copyOfRange(codigo,i,j);
@@ -67,6 +65,39 @@ public class GeneradorASM {
                         codigoAEscrbir=codigoAEscrbir+(instruccion);
                         i=j;
                         break;
+                    default:
+                        if(AutomataID.analizar(token)){
+                            // id, =, ..., ;
+                            j=i;
+                            while(!codigo[j].equals(";")){j++;}
+                            sub=Arrays.copyOfRange(codigo,i,j);
+                            if(AutomataID.analizar(sub[3]) || AutomataNumero.analizar(sub[3])){
+                                String [] postFix=ShuntingYard.toPostfix(Arrays.copyOfRange(sub, 3, sub.length));
+                                for(int k=0;k<postFix.length;k++){
+                                    String temp=postFix[i];
+                                    if(AutomataID.analizar(temp)){
+                                        codigoAEscrbir=codigoAEscrbir+"\nPUSH "+(temp.replace("$", ""));
+                                    }else if(AutomataNumero.analizar(temp)){
+                                        codigoAEscrbir=codigoAEscrbir+"\nPUSH "+(int)(Double.parseDouble(temp)*256);
+                                    }else{
+                                        //Operadores: PENDIENTE
+                                        switch(temp){
+                                            case "+":
+                                                break;
+                                            case "-":
+                                                break;
+                                            case "/":
+                                                break;
+                                            case "*":
+                                                break;
+                                            case "**":
+                                                break;
+                                        }
+                                    }
+                                }
+                            }
+                            i=j;
+                        }
                 }
             }
 
@@ -96,12 +127,46 @@ public class GeneradorASM {
         }
     }
     private static String writePrint(String [] sub){
-        String cadena=NodoPrograma.evaluarString(sub)+"$";
+        String cadena=evaluarString(sub)+"$";
         String temporal="temp"+temporales;
         temporales++;
         String instruccion=temporal+" DB '"+cadena+"'";
         variablesTemporales.push(instruccion.replace("\"",""));
         instruccion="\nMOV DX, OFFSET "+temporal+"\nMOV AH, 09h"+"\nINT 21h";
         return  instruccion.replace("\"","");
+    }
+    private static String evaluarString(String[] arr) {
+        StringBuilder resultado = new StringBuilder();
+
+        boolean enParentesis = false;
+
+        for (String token : arr) {
+
+            // Detectar inicio de paréntesis
+            if (token.contains("(")) {
+                enParentesis = true;
+                continue;
+            }
+
+            // Detectar fin de paréntesis
+            if (token.contains(")")) {
+                enParentesis = false;
+                continue;
+            }
+
+            // Si estamos dentro de paréntesis, agregar
+            if (enParentesis) {
+                if(AutomataID.analizar(token)){}
+                resultado.append(token);
+                continue;
+            }
+
+            // Si es una cadena entre comillas
+            if (token.startsWith("\"") && token.endsWith("\"")) {
+                resultado.append(token.substring(1, token.length() - 1));
+            }
+        }
+
+        return resultado.toString();
     }
 }
