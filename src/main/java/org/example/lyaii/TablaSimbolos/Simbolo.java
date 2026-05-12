@@ -26,27 +26,24 @@ public class Simbolo{
         switch(tipo){
             case STRING:
                 valor_str=valor;
+                this.tipo=Tipos.STRING;
                 break;
             case INT:
             case UINT:
                 int temp=0;
-                try{
-                    temp=Integer.parseInt(valor);
-                    if(temp >= 0 && temp <= 32767){
-                        if(tipo==Tipos.INT)
-                            this.tipo=Tipos.INT;
-                        else
-                            this.tipo=Tipos.UINT;
-                    }else if(temp < 0 && temp >= -32768)
+                temp=Integer.parseInt(valor);
+                if(temp >= 0 && temp <= 32767){
+                    if(tipo==Tipos.INT)
                         this.tipo=Tipos.INT;
-                    else if(temp > 32767 && temp <= 65535)
-                        this.tipo=Tipos.UINT;
                     else
-                        throw new IllegalArgumentException("Valor fuera de los límites de la capacidad!");
-                    this.valor_int=temp;
-                }
-                catch(Exception e){
-                    throw new IllegalArgumentException("Valor no compatible con INT ni con UINT");}
+                        this.tipo=Tipos.UINT;
+                }else if(temp < 0 && temp >= -32768)
+                    this.tipo=Tipos.INT;
+                else if(temp > 32767 && temp <= 65535)
+                    this.tipo=Tipos.UINT;
+                else
+                    throw new IllegalArgumentException("Valor fuera de los límites de la capacidad!");
+                this.valor_int=temp;
                 break;
             case UFIXED:
             case FIXED:

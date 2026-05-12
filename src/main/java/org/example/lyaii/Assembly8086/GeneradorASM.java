@@ -31,18 +31,38 @@ public class GeneradorASM {
 
             //Escribir Símbolos
             for(int j,i=0;i<codigo.length;i++){
+                /* Señalización
+                * 0 := String
+                * 1 := int
+                * 2 := uint
+                * 3 := fixed
+                * 4 := ufixed
+                * */
                 String token=codigo[i];
                 if(token.equals("declare")){
                     j=i;
                     while(!codigo[j].equals(";")){j++;}
                     String[] sub= Arrays.copyOfRange(codigo,i,j);
                     String nombre=(sub[2].replace("$","").toLowerCase());
-                    if(sub[1].equals("int") || sub[1].equals("uint") || sub[1].equals("fixed") || sub[1].equals("ufixed")){
+                    if(sub[1].equals("int")){
                         double valorDec=ShuntingYard.evaluador(ShuntingYard.toPostfix(Arrays.copyOfRange(sub,4,sub.length)));
-                        codigoAEscrbir=codigoAEscrbir+(nombre+" DW "+((int)(valorDec*256))+"\n");
+                        codigoAEscrbir=codigoAEscrbir+(nombre+" DW "+((int)(valorDec*256))+"\n\tdb 1\n");
+                    }else if(sub[1].equals("uint")){
+                        double valorDec=ShuntingYard.evaluador(ShuntingYard.toPostfix(Arrays.copyOfRange(sub,4,sub.length)));
+                        codigoAEscrbir=codigoAEscrbir+(nombre+" DW "+((int)(valorDec))+"\n\tdb 2\n");
+                    }else if(sub[1].equals("fixed")){
+                        double valorDec=ShuntingYard.evaluador(ShuntingYard.toPostfix(Arrays.copyOfRange(sub,4,sub.length)));
+                        codigoAEscrbir=codigoAEscrbir+(nombre+" DW "+(Math.round(valorDec*256))+"\n\tdb 3\n");
+                    }else if(sub[1].equals("ufixed")){
+                        double valorDec=ShuntingYard.evaluador(ShuntingYard.toPostfix(Arrays.copyOfRange(sub,4,sub.length)));
+                        codigoAEscrbir=codigoAEscrbir+(nombre+" DW "+(Math.round(valorDec*256))+"\n\tdb 4\n");
                     }else{
                         String cadena= NodoPrograma.evaluarString(sub);
-                        codigoAEscrbir=codigoAEscrbir+(nombre+" DB '"+cadena+"'\n");
+                        if(cadena.isEmpty()){
+                            codigoAEscrbir=codigoAEscrbir+(nombre+" DB 100 DUP('$')\n\tdb 0\n");
+                        }else{
+                            codigoAEscrbir=codigoAEscrbir+(nombre+" DB '"+cadena+"'\n\tdb 0\n");
+                        }
                     }
                 }
             }
@@ -71,7 +91,7 @@ public class GeneradorASM {
                             j=i;
                             while(!codigo[j].equals(";")){j++;}
                             sub=Arrays.copyOfRange(codigo,i,j);
-                            if(AutomataID.analizar(sub[3]) || AutomataNumero.analizar(sub[3])){
+                            if(AutomataID.analizar(sub[2]) || AutomataNumero.analizar(sub[2])){
                                 String [] postFix=ShuntingYard.toPostfix(Arrays.copyOfRange(sub, 3, sub.length));
                                 for(int k=0;k<postFix.length;k++){
                                     String temp=postFix[i];

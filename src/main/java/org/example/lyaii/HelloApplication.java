@@ -16,6 +16,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
+import javafx.stage.FileChooser;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -31,7 +32,9 @@ import org.example.lyaii.Automatas.AutomataSintax;
 import org.example.lyaii.Tools.PilaErrores;
 import org.fxmisc.richtext.CodeArea;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -282,7 +285,29 @@ public class HelloApplication extends Application {
 
         // Ítem: Abrir archivo
         HBox item2 = crearItemMenu("📂", "Abrir archivo",
-                "Ctrl+O", e -> cerrarMenuArchivo());
+                "Ctrl+O", e -> {
+                    try{
+                        FileChooser fileChooser = new FileChooser();
+                        fileChooser.getExtensionFilters().addAll(
+                                new FileChooser.ExtensionFilter("Archivos HML 86", "*.hml86"),
+                                new FileChooser.ExtensionFilter("Archivos TXT", "*.txt")
+                        );
+                        File file = fileChooser.showOpenDialog(new Stage());
+
+                        if (file != null) {
+                            String contenido = Files.readString(file.toPath());
+                            cda_consola.replaceText(contenido);
+                        }
+                        cerrarMenuArchivo();
+                    }catch (IOException ioe){
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText("Algo salió mal");
+                        alert.setContentText("Ocurrió un error al procesar la operación.");
+
+                        alert.showAndWait();
+                    }
+                });
 
         // Separador
         Separator sep = new Separator();
@@ -291,7 +316,68 @@ public class HelloApplication extends Application {
 
         // Ítem: Guardar
         HBox item3 = crearItemMenu("💾", "Guardar",
-                "Ctrl+S", e -> cerrarMenuArchivo());
+                "Ctrl+S", e -> {
+                    try{
+                        FileChooser fileChooser = new FileChooser();
+
+                        fileChooser.setTitle("Guardar archivo");
+
+                        FileChooser.ExtensionFilter filtroHML86 =
+                                new FileChooser.ExtensionFilter(
+                                        "Archivos HML86",
+                                        "*.hml86"
+                                );
+
+                        FileChooser.ExtensionFilter filtroTexto =
+                                new FileChooser.ExtensionFilter(
+                                        "Archivos de texto",
+                                        "*.txt",
+                                        "*.md"
+                                );
+
+                        fileChooser.getExtensionFilters().addAll(
+                                filtroHML86,
+                                filtroTexto
+                        );
+
+                        // Mostrar diálogo de guardado
+                        File file = fileChooser.showSaveDialog(new Stage());
+
+                        if (file != null) {
+
+                            String extension = "";
+
+                            FileChooser.ExtensionFilter filtroSeleccionado =
+                                    fileChooser.getSelectedExtensionFilter();
+
+                            if (filtroSeleccionado == filtroHML86) {
+                                extension = ".hml86";
+                            } else if (filtroSeleccionado == filtroTexto) {
+                                extension = ".txt";
+                            }
+
+                            // Agregar extensión si falta
+                            if (!file.getName().endsWith(extension)) {
+                                file = new File(file.getAbsolutePath() + extension);
+                            }
+
+                            // Obtener contenido del CodeArea
+                            String contenido = cda_consola.getText();
+
+                            // Guardar archivo
+                            Files.writeString(file.toPath(), contenido);
+
+                            cerrarMenuArchivo();
+                        }
+                    }catch (IOException ioe){
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText("Algo salió mal");
+                        alert.setContentText("Ocurrió un error al procesar la operación.");
+
+                        alert.showAndWait();
+                    }
+                });
 
         // Ítem: Compilar (refleja estado del mit_compilar)
         HBox item4 = crearItemMenu("▶", "Compilar",
@@ -731,13 +817,15 @@ public class HelloApplication extends Application {
     private void IniciarEditor() {
         cda_error.getStyleClass().add("AreaError");
         cda_consola.textProperty().addListener((obs, viejo, nuevo) -> {
-            if (!nuevo.isEmpty() && !nuevo.isBlank()) {
-                cda_consola.setStyleSpans(0, identificarPalabras(nuevo));
-            }
-            if (lbl_lineCount != null) {
-                long lineas = nuevo.isEmpty() ? 0 : nuevo.lines().count();
-                lbl_lineCount.setText("Líneas: " + lineas);
-            }
+            try{
+                if (!nuevo.isEmpty() && !nuevo.isBlank()) {
+                    cda_consola.setStyleSpans(0, identificarPalabras(nuevo));
+                }
+                if (lbl_lineCount != null) {
+                    long lineas = nuevo.isEmpty() ? 0 : nuevo.lines().count();
+                    lbl_lineCount.setText("Líneas: " + lineas);
+                }
+            }catch (Exception e){}
         });
     }
 
@@ -759,7 +847,7 @@ public class HelloApplication extends Application {
                 setStatus(success(), "Código validado");
                 cda_error.replaceText("<CORE>: Código validado!\n");
                 //Generación de código asm
-                GeneradorASM.generar(codigo_limpio);
+                //GeneradorASM.generar(codigo_limpio);
             } else {
                 setStatus(danger(), "Error semántico");
                 cda_error.replaceText("");
@@ -810,8 +898,10 @@ public class HelloApplication extends Application {
                     || palabra.charAt(0) == ')'  || palabra.charAt(0) == ';'
                     || palabra.charAt(0) == '+'  || palabra.charAt(0) == '-'
                     || palabra.charAt(0) == '*'  || palabra.charAt(0) == '/'
+                    || palabra.charAt(0) == '<'  || palabra.charAt(0) == '>'
                     || palabra.charAt(0) == '='  || palabra.equals("||")
-                    || palabra.equals("&&"))) {
+                    || palabra.equals("&&") || palabra.equals("<=")
+                    || palabra.equals(">="))) {
                 creadorSpans.add(Collections.singleton("default"), length);
             } else if (palabra.charAt(0) == '%') {
                 tokenCount++;
@@ -870,7 +960,7 @@ public class HelloApplication extends Application {
 
 
 // ════════════════════════════════════════════════════════════════════════════
-//  TOKENIZADOR — sin cambios
+//  TOKENIZADOR
 // ════════════════════════════════════════════════════════════════════════════
 class Tokenizador {
     private static String[] tokens;

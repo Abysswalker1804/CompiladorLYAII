@@ -60,7 +60,7 @@ public class NodoPrograma extends Nodo{
                 instrucciones.addAsignacion(valor,TablaSimbolos.consultar(tokens[0]));
             else
                 nodoAnidado.hijos.add(instrucciones.giveAsignacion(valor,TablaSimbolos.consultar(tokens[0])));
-            if(valor != TablaSimbolos.consultar(tokens[2]).getTipo())
+            if(valor != TablaSimbolos.consultar(tokens[0]).getTipo())
                 PilaErrores.push("Dato no compatible con la declaración de variable!");
         }catch (IllegalArgumentException iae){
             System.out.println(iae.getMessage());
