@@ -288,7 +288,7 @@ public class AutomataSintax {
                         }
                         break;
                     default:
-                        error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba algún tipo de operador aritmético o relacional!";
+                        error="Error de Sinatxis cerca de "+(tokens[pos]==null?tokens[pos-1]:tokens[pos])+":\nSe esperaba un delimitador!";
                         flag=false;
                 }
             }
