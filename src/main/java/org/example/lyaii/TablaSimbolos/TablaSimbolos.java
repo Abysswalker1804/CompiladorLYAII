@@ -1,6 +1,8 @@
 package org.example.lyaii.TablaSimbolos;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.example.lyaii.Enums.Tipos;
@@ -87,5 +89,14 @@ public class TablaSimbolos {
             i++;
         }
         return all;
+    }
+    public static List<Simbolo> getList(){
+        Simbolo [] all=new Simbolo[tabla.size()];
+        int i=0;
+        for(Simbolo sym: tabla.values()){
+            all[i]=sym;
+            i++;
+        }
+        return Arrays.asList(all);
     }
 }
