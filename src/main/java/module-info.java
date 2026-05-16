@@ -5,6 +5,8 @@ module org.example.lyaii {
     requires org.kordamp.bootstrapfx.core;
     requires org.fxmisc.richtext;
 
+    requires  com.brunomnsilva.smartgraph;
+
     opens org.example.lyaii to javafx.fxml;
     exports org.example.lyaii;
 

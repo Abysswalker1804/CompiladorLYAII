@@ -1,5 +1,9 @@
 package org.example.lyaii.Graficos;
 
+import com.brunomnsilva.smartgraph.graph.Graph;
+import com.brunomnsilva.smartgraph.graph.GraphEdgeList;
+import com.brunomnsilva.smartgraph.graph.Vertex;
+import com.brunomnsilva.smartgraph.graphview.SmartGraphPanel;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
@@ -18,7 +22,7 @@ public class ASTGrafico extends Application{
     }
     @Override
     public void start(Stage stage){
-        Scene scene=nodeViewer();
+        Scene scene=graph();
         stage.setTitle("Árbol");
         stage.setMinWidth(860);
         stage.setMinHeight(560);
@@ -50,7 +54,16 @@ public class ASTGrafico extends Application{
         return scene;
     }
     private static Scene graph(){
-        ;
-        return null;
+        Graph <String, String> graph=new GraphEdgeList<>();
+        Vertex<String> a = graph.insertVertex("A");
+        Vertex<String> b = graph.insertVertex("B");
+        Vertex<String> c = graph.insertVertex("C");
+
+        graph.insertEdge(a, b, "AB");
+        graph.insertEdge(a, c, "AC");
+
+        SmartGraphPanel<String, String> graphView =
+                new SmartGraphPanel<>(graph);
+        return new Scene(graphView, 800, 600);
     }
 }
