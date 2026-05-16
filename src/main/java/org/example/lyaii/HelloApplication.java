@@ -901,7 +901,7 @@ public class HelloApplication extends Application {
                     || palabra.charAt(0) == '<'  || palabra.charAt(0) == '>'
                     || palabra.charAt(0) == '='  || palabra.equals("||")
                     || palabra.equals("&&") || palabra.equals("<=")
-                    || palabra.equals(">="))) {
+                    || palabra.equals(">=") || palabra.equals("!="))) {
                 creadorSpans.add(Collections.singleton("default"), length);
             } else if (palabra.charAt(0) == '%') {
                 tokenCount++;

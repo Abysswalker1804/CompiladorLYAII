@@ -7,4 +7,7 @@ module org.example.lyaii {
 
     opens org.example.lyaii to javafx.fxml;
     exports org.example.lyaii;
+
+    exports org.example.lyaii.Graficos;
+    opens org.example.lyaii.Graficos to javafx.graphics;
 }
