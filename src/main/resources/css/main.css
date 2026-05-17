@@ -1,13 +1,13 @@
-.palabraReservada {
-    -fx-fill: blue; /* Resalta palabras clave en azul */
+/*.palabraReservada {
+    -fx-fill: blue; /* Resalta palabras clave en azul
     -fx-font-weight: bold;
 }
 .tiposDatos{
-    -fx-fill: #C79B56; /* Resalta palabras clave en azul */
+    -fx-fill: #C79B56; /* Resalta palabras clave en amarillo
     -fx-font-weight: bold;
 }
 .booleans{
-    -fx-fill: #3f9c8d; /* Resalta palabras clave en azul */
+    -fx-fill: #3f9c8d; /* Resalta palabras clave en azul
     -fx-font-weight: bold;
 }
 .error{
@@ -20,7 +20,7 @@
     -fx-font-weight: bold;
 }
 .default {
-    -fx-fill: black; /* Normal para el resto del texto */
+    -fx-fill: black; /* Normal para el resto del texto
 }
 
 .cadena{
@@ -58,4 +58,125 @@
 }
 .AreaError .text{
     -fx-fill: #26ff00;
+}/*
+
+
+
+
+/* ── Sintaxis ──────────────────────────────────────────────────────────── */
+.palabraReservada {
+    -fx-fill: blue/*#5B8DEF*/;
+    -fx-font-weight: bold;
+}
+.tiposDatos {
+    -fx-fill: #C79B56;
+    -fx-font-weight: bold;
+}
+.booleans {
+    -fx-fill: #3f9c8d;
+    -fx-font-weight: bold;
+}
+.error {
+    -fx-fill: red;
+    -fx-font-weight: bold;
+    -fx-underline: true;
+}
+.comentario {
+    -fx-fill: rgb(99, 94, 94);
+    -fx-font-style: italic;
+}
+.default {
+    -fx-fill: #1A2035;
+}
+.cadena {
+    -fx-fill: #1a7a10;
+    -fx-font-weight: bold;
+}
+.identificador {
+    -fx-fill: #8B2FC9;
+    -fx-font-weight: bold;
+}
+
+/* ── Área de código (modo claro) ──────────────────────────────────────── */
+.AreaEditable {
+    -fx-font-size: 14px;
+    -fx-font-family: "Consolas";
+    -fx-background-color: #FAFAFA;
+}
+/*.AreaEditable .text {*/
+/*    -fx-fill: #1A2035;*/
+/*}*/
+
+/* ── Área de código (modo oscuro) ─────────────────────────────────────── */
+.AreaEditableNoche {
+    -fx-font-size: 14px;
+    -fx-font-family: "Consolas";
+    -fx-background-color: #7c80a8;
+}
+/*.AreaEditableNoche .text {*/
+/*    -fx-fill: #12141C;*/
+/*}*/
+
+/* ── Números de línea ─────────────────────────────────────────────────── */
+.linea-numero {
+    -fx-font-family: "Consolas";
+    -fx-font-size: 13px;
+    -fx-text-fill: #94A3B8;
+    -fx-background-color: transparent;
+    -fx-alignment: center-right;
+    -fx-padding: 0 8 0 8;
+    -fx-min-width: 40px;
+}
+.linea-numero-oscuro {
+    -fx-font-family: "Consolas";
+    -fx-font-size: 13px;
+    -fx-text-fill: #3E4A66;
+    -fx-background-color: transparent;
+    -fx-alignment: center-right;
+    -fx-padding: 0 8 0 8;
+    -fx-min-width: 40px;
+}
+.gutter-claro {
+    -fx-background-color: #F0F2F5;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 0 1 0 0;
+}
+.gutter-oscuro {
+    -fx-background-color: #1C1F2E;
+    -fx-border-color: #2A304A;
+    -fx-border-width: 0 1 0 0;
+}
+
+/* ── Consola de errores (SIEMPRE fondo blanco, texto negro) ───────────── */
+.AreaError {
+    -fx-background-color: #FFFFFF;
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 13px;
+}
+.AreaError .text {
+    -fx-fill: #1A1A1A;
+}
+
+/* ── Clases de texto para la consola (aplicadas por código) ───────────── */
+.console-error {
+    -fx-fill: #CC0000;
+    -fx-font-weight: bold;
+}
+.console-ok {
+    -fx-fill: #1A6B35;
+    -fx-font-weight: bold;
+}
+.console-info {
+    -fx-fill: #1A2035;
+}
+
+/* ── Legacy (mantener compatibilidad) ─────────────────────────────────── */
+.consola {
+    -fx-background-color: black;
+}
+.consola .text {
+    -fx-fill: #26ff00;
+    -fx-font-size: 15px;
+    -fx-font-family: "Consolas";
+    -fx-font-weight: bold;
 }
